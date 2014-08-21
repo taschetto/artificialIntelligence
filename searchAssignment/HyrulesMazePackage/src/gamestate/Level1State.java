@@ -21,7 +21,7 @@ public class Level1State extends GameState {
 	@Override
 	public void init() {
 		tileMap = new TileMap(60);
-		tileMap.loadTiles("/Sprites/tiles.png");
+		tileMap.loadTiles("/sprites/tiles.png");
 		tileMap.loadMap(Util.map);
 		tileMap.setPosition(0, 0);
 		
