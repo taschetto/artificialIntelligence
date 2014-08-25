@@ -12,8 +12,7 @@ public class State {
 	}
 	
 	public int hashCode() {
-		// TODO Your code here
-		return super.hashCode(); //The hashcode here is not efficient if you use a HashSet for your closed list
+		return 7 * this.x^2 + this.y;
 	}
 	
 	public boolean equals(Object obj){
