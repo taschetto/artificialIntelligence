@@ -21,6 +21,19 @@ public class AStar implements ISolver {
 		return Math.abs(this.goalState.x - state.x) + Math.abs(this.goalState.y - state.y);
 	}
 	
+	private ArrayList<Action> Solution(Node node)
+	{
+		ArrayList<Action> actions = new ArrayList<Action>();
+		
+		do
+		{
+			actions.add(node.getAction());
+			node = node.getParent();
+		} while (node != null);
+		
+		return actions;
+	}
+	
 	@Override
 	public ArrayList<Action> solve(int x0, int y0, int xG, int yG, int[][] map){
 		//TODO Your code here
@@ -28,7 +41,7 @@ public class AStar implements ISolver {
 		State initialState = new State(x0, y0, map);
 		
 		PriorityQueue<Node> frontier = new PriorityQueue<Node>(1, new NodeComparator());
-		frontier.add(new Node(initialState, 0, DistanceToGoal(initialState)));
+		frontier.add(new Node(null, null, initialState, 0, DistanceToGoal(initialState)));
 		HashSet<State> explored = new HashSet<State>();
 		
 		while (true)
@@ -36,22 +49,24 @@ public class AStar implements ISolver {
 			if (frontier.isEmpty())
 				break;
 			
-			Node n = frontier.poll();
-			State s = n.getState();
+			Node node = frontier.poll();
+			State state = node.getState();
 			
-			if (this.GoalTest(s)) return null; // Solution(node)
-			explored.add(s);
+			if (this.GoalTest(state)) return Solution(node);
+			explored.add(state);
 			
-			for (Action a : tf.availableActions(s))
+			for (Action action : tf.availableActions(state))
 			{
-				State succ = tf.successor(s, a);
-				Node child = new Node(succ, n.getG() + 1, DistanceToGoal(succ));
-				if (!explored.contains(succ) && !frontier.contains(child))
+				State successor = tf.successor(state, action);
+				Node child = new Node(node, action, successor, node.G() + 1, DistanceToGoal(successor));
+				if (!explored.contains(successor) && !frontier.contains(child))
 				{
 					frontier.add(child);
 				}
 				else
 				{
+					frontier.remove(child);
+					frontier.add(child);
 				}
 			}			
 		}

@@ -6,8 +6,8 @@ public class NodeComparator implements Comparator<Node> {
 
 	@Override
 	public int compare(Node arg0, Node arg1) {
-        Integer cost1 = arg0.getG() + arg0.getH();
-        Integer cost2 = arg1.getG() + arg1.getH();
+        Integer cost1 = arg0.F();
+        Integer cost2 = arg1.F();
         return cost1.compareTo(cost2);
 	}
 }
