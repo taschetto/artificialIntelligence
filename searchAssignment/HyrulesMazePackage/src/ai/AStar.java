@@ -1,6 +1,7 @@
 package ai;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.PriorityQueue;
 
@@ -10,11 +11,6 @@ public class AStar implements ISolver {
 
 	//Now you know that you need to use the transition function we provided you
 	private TransitionFunction tf = new TransitionFunction();
-	
-	private boolean GoalTest(State state)
-	{
-		return state.x == this.goalState.x && state.y == this.goalState.y;
-	}
 	
 	private int DistanceToGoal(State state)
 	{
@@ -31,6 +27,8 @@ public class AStar implements ISolver {
 			node = node.getParent();
 		} while (node != null);
 		
+		Collections.reverse(actions);
+		
 		return actions;
 	}
 	
@@ -41,7 +39,7 @@ public class AStar implements ISolver {
 		State initialState = new State(x0, y0, map);
 		
 		PriorityQueue<Node> frontier = new PriorityQueue<Node>(1, new NodeComparator());
-		frontier.add(new Node(null, null, initialState, 0, DistanceToGoal(initialState)));
+		frontier.add(new Node(null, null, initialState, 0, this.DistanceToGoal(initialState)));
 		HashSet<State> explored = new HashSet<State>();
 		
 		while (true)
@@ -49,25 +47,32 @@ public class AStar implements ISolver {
 			if (frontier.isEmpty())
 				break;
 			
-			Node node = frontier.poll();
-			State state = node.getState();
+			Node parent = frontier.poll();
+			State state = parent.getState();
 			
-			if (this.GoalTest(state)) return Solution(node);
+			if (state.x == 4 && state.y == 6)
+			{
+				state.getClass();
+			}
+			
+			if (this.goalState.equals(state)) return Solution(parent);
+			
 			explored.add(state);
 			
 			for (Action action : tf.availableActions(state))
 			{
 				State successor = tf.successor(state, action);
-				Node child = new Node(node, action, successor, node.G() + 1, DistanceToGoal(successor));
-				if (!explored.contains(successor) && !frontier.contains(child))
-				{
-					frontier.add(child);
-				}
-				else
+				if (explored.contains(successor))
+					continue;
+				
+				Node child = new Node(parent, action, successor, parent.G() + 1, this.DistanceToGoal(successor));
+				
+				if (frontier.contains(child))
 				{
 					frontier.remove(child);
-					frontier.add(child);
 				}
+				
+				frontier.add(child);
 			}			
 		}
 		
