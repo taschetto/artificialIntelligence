@@ -2,13 +2,10 @@
  *  Hyrule's maze readme.txt template
  **********************************************************************/
 
-
 Name: Guilherme de Mello Mattos Taschetto
 Student ID: 12180247-4
 
-
-Hours to complete assignment (optional): 
-
+Hours to complete assignment (optional): 6~8
 
 /**********************************************************************
  *  Explain briefly how you implemented the datatype for states 
@@ -16,9 +13,14 @@ Hours to complete assignment (optional):
  **********************************************************************/
 
 The closed list was called "explored" in my implementation. It is a
-standard Java HashSet for Node
+standard Java HashSet for storing Node objects. The Node#hashCode() method 
+returns the Node's State#hashCode().
 
+As suggested in the assignment, the State#hashCode() equals to
+7 * State.x^2 + State.y.
 
+Is is belived that this hash function allows a lookup in the HashSet to
+have a O(1) complexity.
 
 /**********************************************************************
  *  Explain briefly how you represented a search node
@@ -67,6 +69,8 @@ Other relevant methods:
  *  Explain briefly how you detected unsolvable problems.
  **********************************************************************/
 
+ If the AStar#Solve method returned null, the problem is unsolvable.
+ Lazy but works. :-P
 
 /**********************************************************************
  *  If you wanted to solve random $10^8$ problem (i.e. a $10000 \times 
@@ -76,10 +80,8 @@ Other relevant methods:
  * improvement from Hamming to Manhattan)? Why?
  **********************************************************************/
 
-
-
-
-
+A better priority function. It would allow to focus towards the solution
+more efficiently - thus saving time, memory and queue accesses.
 
 /**********************************************************************
  *  If you did the extra credit, describe your algorithm briefly and
@@ -87,14 +89,13 @@ Other relevant methods:
  *  for isSolvable().
  **********************************************************************/
 
-
-
+I did not. :-(
 
 /**********************************************************************
  *  Known bugs / limitations.
  **********************************************************************/
 
-
+None of them are known.
 
 /**********************************************************************
  *  Describe whatever help (if any) that you received.
@@ -103,7 +104,8 @@ Other relevant methods:
  *  friends) and attribute them by name.
  **********************************************************************/
 
-None.
+Conceptual and implementation conversations with João Pedro Chagas
+(classmate). Code was not shared. :-)
 
 /**********************************************************************
  *  Describe any serious problems you encountered.                    
@@ -115,18 +117,37 @@ The algorithm from AIMA's book has the current statement:
   else if child is in frontier with highter PATH-COST then
     replace that frontier node with child
 
-However, frontier is a Priority Queue. And a queue, by design, doesn't
-provide random access to its elements - it only pops from the queue's
-HEAD and pushes to the queue's TAIL. That being said, it is not possible
-to replace the node with a new one.
+However, frontier is a Priority Queue. And a queue, by its definition,
+doesn't provide random access to its elements - it only pops from the 
+queue's HEAD and pushes to the queue's TAIL. That being said, it is
+not possible to replace the node with a new one.
 
 To work around this limitation, I've made a change to the algorithm.
 
-  When a parent node is expanded to a child that has already been explo-
-  red, skip the child. Otherwise, add child to frontier.
+  if child is in explored skip the child
+  else add child to frontier.
+
+This approach seemed to work very well. But I was not confident about
+its implications on the algorithm completude. Then I found this topic
+on Stack Overflow
+
+http://stackoverflow.com/questions/12691217/can-i-modify-the-standard-a-a-star-under-consistent-heuristic-uniform-cost
+
+  which the user had the same problem. It was stated by the users that
+it would work when using non monotonic heuristic. But then the time was
+over and I had to deliver the assignment without total understanding
+about this point.
 
 /**********************************************************************
  *  List any other comments here. Feel free to provide any feedback   
  *  on how much you learned from doing the assignment, and whether    
  *  you enjoyed doing it.                                             
- **********************************************************************/
+ *********************************************************************/
+
+ It was fun to engage into this implementation. More assignments like
+ this are welcome.
+
+ Congratulations for the Professor and his Assistant for the high
+ quality boilerplate code. This isn't common here at FACIN. :-)
+
+
