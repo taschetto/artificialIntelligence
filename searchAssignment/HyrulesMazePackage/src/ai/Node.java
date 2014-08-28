@@ -1,29 +1,17 @@
 package ai;
 
 public class Node {
+	private Problem problem;
+	private State state;
 	private Node parent;
 	private Action action;
-	private State state;
-	private int g;
-	private int h;
 	
-	public Node(Node parent, Action action, State state, int g, int h)
+	public Node(Problem problem, State state, Node parent, Action action)
 	{
+		this.problem = problem;
+		this.state = state;
 		this.parent = parent;
 		this.action = action;
-		this.state = state;
-		this.g = g;
-		this.h = h;
-	}
-	
-	public Node getParent()
-	{
-		return this.parent;
-	}
-	
-	public Action getAction()
-	{
-		return this.action;
 	}
 	
 	public State getState()
@@ -33,17 +21,27 @@ public class Node {
 	
 	public int G()
 	{
-		return this.g;
+		return this.parent != null ? parent.G() + 1 : 1;
 	}
 	
 	public int H()
 	{
-		return this.h;
+		return this.problem.HeuristicFunction(this.state);
 	}
 	
 	public int F()
 	{
 		return this.G() + this.H();
+	}
+
+	public Node getParent()
+	{
+		return this.parent;
+	}
+	
+	public Action getAction()
+	{
+		return this.action;
 	}
 	
 	@Override
