@@ -11,16 +11,16 @@ public class AStar implements ISolver, ISearch {
 	@Override
 	public ArrayList<Action> solve(int x0, int y0, int xG, int yG, int[][] map)
 	{
-		Problem problem = new Problem(new State(xG, yG, map), new State(x0, y0, map), new TransitionFunction(), new Manhattan());
-		Node solution = Search(problem, new NodeComparator());
+		Problem problem = new Problem(new State(xG, yG, map), new State(x0, y0, map), new TransitionFunction(), new Manhattan(), new NodeComparator());
+		Node solution = Search(problem);
 		
 		return solution == null ? null : problem.SolutionFromNode(solution);
 	}
 
 	@Override
-	public Node Search(Problem problem, Comparator<Node> comparator) {
+	public Node Search(Problem problem) {
 		HashSet<Node> explored = new HashSet<Node>();
-		Queue<Node> frontier = new PriorityQueue<Node>(1, comparator);
+		Queue<Node> frontier = new PriorityQueue<Node>(1, problem.getComparator());
 		
 		frontier.add(new Node(problem, problem.getInitialState(), null, Action.NONE));
 		
@@ -32,10 +32,9 @@ public class AStar implements ISolver, ISearch {
 			if (problem.GoalTest(state)) return parent;
 			explored.add(parent);
 			
-			TransitionFunction tf = problem.getTransitionFunction();
-			for (Action action : tf.availableActions(state))
+			for (Action action : problem.availableActions(state))
 			{
-				State successor = tf.successor(state, action);
+				State successor = problem.successor(state, action);
 				Node child = new Node(problem, successor, parent, action);
 				
 				if (explored.contains(child))
@@ -58,16 +57,16 @@ public class AStar implements ISolver, ISearch {
 	@Override
 	public int maxTreeHeight(int x0, int y0, int xG, int yG, int[][] map)
 	{
-		Problem problem = new Problem(new State(xG, yG, map), new State(x0, y0, map), new TransitionFunction(), new Manhattan());
-		Node solution = Search(problem, new NodeComparator());
+		Problem problem = new Problem(new State(xG, yG, map), new State(x0, y0, map), new TransitionFunction(), new Manhattan(), new NodeComparator());
+		Node solution = Search(problem);
 		return solution == null ? -1 : solution.G();
 	}
 
 	@Override
 	public int minMoves(int x0, int y0, int xG, int yG, int[][] map)
 	{
-		Problem problem = new Problem(new State(xG, yG, map), new State(x0, y0, map), new TransitionFunction(), new Manhattan());
-		Node solution = Search(problem, new NodeComparator());
+		Problem problem = new Problem(new State(xG, yG, map), new State(x0, y0, map), new TransitionFunction(), new Manhattan(), new NodeComparator());
+		Node solution = Search(problem);
 		
 		return solution == null ? -1 : problem.SolutionFromNode(solution).size();
 	}

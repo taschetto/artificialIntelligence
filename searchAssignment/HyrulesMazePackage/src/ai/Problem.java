@@ -7,13 +7,15 @@ public class Problem {
 	private State initialState;
 	private TransitionFunction transitionFunction;
 	private IHeuristic heuristic;
+	private NodeComparator nodeComparator;
 	
-	public Problem(State goalState, State initialState, TransitionFunction transitionFunction, IHeuristic heuristic)
+	public Problem(State goalState, State initialState, TransitionFunction transitionFunction, IHeuristic heuristic, NodeComparator nodeComparator)
 	{
 		this.goalState = goalState;
 		this.initialState = initialState;
 		this.transitionFunction = transitionFunction;
 		this.heuristic = heuristic;
+		this.nodeComparator = nodeComparator;
 	}
 	
 	public State getInitialState()
@@ -21,9 +23,19 @@ public class Problem {
 		return this.initialState;
 	}
 	
-	public TransitionFunction getTransitionFunction()
+	public NodeComparator getComparator()
 	{
-		return transitionFunction;
+		return this.nodeComparator;
+	}
+	
+	public Action[] availableActions(State state)
+	{
+		return this.transitionFunction.availableActions(state);
+	}
+	
+	public State successor(State state, Action action)
+	{
+		return this.transitionFunction.successor(state, action);
 	}
 	
 	public int HeuristicFunction(State state)
