@@ -189,7 +189,7 @@ public class TicTacToe {
 				m = new Move(0,1);
 				break;
 			case 9:
-				m = new Move(0,1);
+				m = new Move(0,2);
 				break;
 			default:
 				println("Invalid move");
