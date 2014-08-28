@@ -40,8 +40,9 @@ public class AStar implements ISolver, ISearch {
 				
 				if (explored.contains(child))
 					continue;
-
-				frontier.add(child);
+				
+				if (!frontier.contains(child))
+					frontier.add(child);
 			}			
 		}
 		
