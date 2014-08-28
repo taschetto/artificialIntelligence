@@ -45,6 +45,12 @@ public class Node {
 	}
 	
 	@Override
+	public int hashCode()
+	{
+		return this.state.hashCode();
+	};
+	
+	@Override
 	public boolean equals(Object o)
 	{
 	    if (o == null) return false;

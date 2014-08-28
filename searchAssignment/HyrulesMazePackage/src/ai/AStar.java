@@ -1,10 +1,10 @@
 package ai;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.PriorityQueue;
+import java.util.Queue;
 
 public class AStar implements ISolver, ISearch {
 	
@@ -20,7 +20,7 @@ public class AStar implements ISolver, ISearch {
 	@Override
 	public Node Search(Problem problem, Comparator<Node> comparator) {
 		HashSet<Node> explored = new HashSet<Node>();
-		PriorityQueue<Node> frontier = new PriorityQueue<Node>(1, comparator);
+		Queue<Node> frontier = new PriorityQueue<Node>(1, comparator);
 		
 		frontier.add(new Node(problem, problem.getInitialState(), null, Action.NONE));
 		
@@ -30,7 +30,6 @@ public class AStar implements ISolver, ISearch {
 			State state = parent.getState();
 			
 			if (problem.GoalTest(state)) return parent;
-			
 			explored.add(parent);
 			
 			TransitionFunction tf = problem.getTransitionFunction();
@@ -41,11 +40,8 @@ public class AStar implements ISolver, ISearch {
 				
 				if (explored.contains(child))
 					continue;
-				
-				if (!frontier.contains(child))
-				{
-					frontier.add(child);
-				}
+
+				frontier.add(child);
 			}			
 		}
 		
