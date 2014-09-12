@@ -1,0 +1,14 @@
+MAS aiLab1 {
+
+	infrastructure: Centralised
+	
+	environment: edu.pucrs.ai.aop.EnvironmentC
+
+	agents:
+        ag1;
+
+        ag2;
+
+	aslSourcePath:
+		"src/asl";
+}

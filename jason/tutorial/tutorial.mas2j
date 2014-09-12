@@ -1,0 +1,12 @@
+MAS tutorial {
+
+	infrastructure: Centralised
+
+	environment: MyEnvironment
+
+	agents:
+		agent1 carrot_agent;
+
+	aslSourcePath:
+		"src/asl";
+}

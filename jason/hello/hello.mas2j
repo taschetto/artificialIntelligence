@@ -1,0 +1,13 @@
+/* Jason Project */
+
+MAS hello {
+
+    infrastructure: Centralised
+
+    environment: MyCuteEnvironment
+
+    agents:
+        greeter;
+
+}
+

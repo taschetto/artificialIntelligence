@@ -1,0 +1,3 @@
+		EnvA		EnvB		EnvC		EnvD
+Observável	Sim		Sim		Parcialmente	Não
+Determínistico	Não		Sim		Não		Sim
