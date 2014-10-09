@@ -1,0 +1,17 @@
+(define (problem pb1blocks)
+  (:domain blocks)
+  (:objects a b c t)
+
+  (:init  (on a t)
+          (on b t)
+          (on c t)
+          (block a)
+          (block b)
+          (block c)
+          (clear a)
+          (clear b)
+          (clear c)
+          (table t))
+
+  (:goal (and (on a b) (on b c)))
+)
