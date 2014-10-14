@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+JDIR="/javagp"
+#echo ${DIR}
+echo "${@:1}"
+CLASSPATH=${DIR}${JDIR}/javagp.jar:${DIR}${JDIR}/lib/jason.jar:${DIR}${JDIR}/lib/pddl4j.jar
+java -classpath "${CLASSPATH}" -Xmx1g -jar "${DIR}${JDIR}/javagp.jar" "${@:1}"
