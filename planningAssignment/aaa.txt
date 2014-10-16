@@ -1,7 +1,0 @@
-at(?atlas, ?location)
-connected(?location1, ?location2)
-
-enter
-
-exit
-

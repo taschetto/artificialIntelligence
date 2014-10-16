@@ -1,32 +1,66 @@
 (define (domain aperture)
-  (:requirements :strips :equality)
+  (:requirements :strips :disjunctive-preconditions :typing)
 
-  (:predicates  (at ?x ?y)
-                (connected ?x ?y)
-                (in ?x ?y)
-                (has ?x ?y)
-                (isRobot ?x)
-                (isCube ?x)
-                (isHallway ?x)
-                (isRoom ?x))
+  (:types robot
+          location
+          hallway room - location
+          cube)
+
+  (:predicates  (at ?r - robot ?loc - location)
+                (connected ?location1 ?loc2 - location)
+                (in ?c - cube ?loc - location)
+                (has ?r - robot ?c - cube)
+                (unloaded ?r - robot))
 
   (:action enter
-    :parameters (?robot ?from ?to)
-    :precondition (and (isRobot ?robot) (isHallway ?from) (isRoom ?to) (at ?robot ?from) (connected ?from ?to))
-    :effect (and (not (at ?robot ?from)) (at ?robot ?to)))
+    :parameters (?r - robot ?from - hallway ?to - room)
+    :precondition
+      (and (at ?r ?from)
+           (or (connected ?from ?to)
+               (connected ?to ?from)))
+    :effect
+      (and (not (at ?r ?from))
+           (at ?r ?to)))
 
   (:action exit
-    :parameters (?robot ?from ?to)
-    :precondition (and (isRobot ?robot) (isRoom ?from) (isHallway ?to) (at ?robot ?from) (connected ?from ?to))
-    :effect (and (not (at ?robot ?from)) (at ?robot ?to)))
+    :parameters (?r - robot ?from - room ?to - hallway)
+    :precondition
+      (and (at ?r ?from)
+           (or (connected ?from ?to)
+               (connected ?to ?from)))
+    :effect
+      (and (not (at ?r ?from))
+           (at ?r ?to)))
 
   (:action move
-    :parameters (?robot ?from ?to)
-    :precondition (and (isHallway ?from) (isHallway ?to) (at ?robot ?from) (connected ?from ?to))
-    :effect (and (not (at ?robot ?from)) (at ?robot ?to)))
+    :parameters (?r - robot ?from ?to - hallway)
+    :precondition
+      (and (at ?r ?from)
+           (or (connected ?from ?to)
+               (connected ?to ?from)))
+    :effect
+      (and (not (at ?r ?from))
+           (at ?r ?to)))
 
   (:action pickup 
-    :parameters (?robot ?cube ?location)
-    :precondition (and (isRobot ?robot) (isCube ?cube) (at ?robot ?location) (in ?cube ?location))
-    :effect (and ))
+    :parameters (?r - robot ?c - cube ?loc - location)
+    :precondition
+      (and (at ?r ?loc)
+           (in ?c ?loc)
+           (not (has ?r ?c))
+           (unloaded ?r))
+    :effect
+      (and (has ?r ?c)
+           (not (in ?c ?loc))
+           (not (unloaded ?r))))
+
+  (:action drop
+    :parameters (?r - robot ?c - cube ?loc - location)
+    :precondition
+      (and (at ?r ?loc)
+           (has ?r ?c)
+           (not (unloaded ?r)))
+    :effect
+      (and (not (has ?r ?c))
+           (in ?c ?loc)))
 )
