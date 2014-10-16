@@ -15,5 +15,5 @@
 
   (:goal
     (and (in c h3)
-         (at r h3)))
+         (at atlas h3)))
 )

@@ -22,5 +22,5 @@
     (and (in c1 h4)
          (in c2 h4)
          (in c3 h4)
-         (at r h4)))
+         (at atlas h4)))
 )

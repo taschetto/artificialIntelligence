@@ -1,9 +1,9 @@
-(define (problem pb2)
+(define (problem pb3)
   (:domain aperture)
   (:requirements :strips :disjunctive-preconditions :typing)
   (:objects
     atlas - robot
-    h1 h2 h3 h4 h5 h6 h7 h8 h9- hallway
+    h1 h2 h3 h4 h5 h6 h7 h8 h9 - hallway
     r1 r2 r3 r4 room
     c1 c2 c3 - cube)
 
@@ -28,5 +28,5 @@
     (and (in c1 h9)
          (in c2 h9)
          (in c3 h9)
-         (at r h9)))
+         (at atlas h9)))
 )
