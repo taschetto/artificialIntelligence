@@ -1,13 +1,11 @@
 (define (domain aperture)
-  (:requirements :strips :disjunctive-preconditions :typing)
+  (:requirements :strips :typing :negative-preconditions)
 
-  (:types robot
-          location
-          hallway room - location
-          cube)
+  (:types robot location cube - object
+          hallway room - location)
 
   (:predicates  (at ?r - robot ?loc - location)
-                (connected ?location1 ?loc2 - location)
+                (connected ?loc1 ?loc2 - location)
                 (in ?c - cube ?loc - location)
                 (has ?r - robot ?c - cube)
                 (unloaded ?r - robot))
@@ -16,8 +14,7 @@
     :parameters (?r - robot ?from - hallway ?to - room)
     :precondition
       (and (at ?r ?from)
-           (or (connected ?from ?to)
-               (connected ?to ?from)))
+           (connected ?from ?to))
     :effect
       (and (not (at ?r ?from))
            (at ?r ?to)))
@@ -26,8 +23,7 @@
     :parameters (?r - robot ?from - room ?to - hallway)
     :precondition
       (and (at ?r ?from)
-           (or (connected ?from ?to)
-               (connected ?to ?from)))
+           (connected ?from ?to))
     :effect
       (and (not (at ?r ?from))
            (at ?r ?to)))
@@ -36,8 +32,7 @@
     :parameters (?r - robot ?from ?to - hallway)
     :precondition
       (and (at ?r ?from)
-           (or (connected ?from ?to)
-               (connected ?to ?from)))
+           (connected ?from ?to))
     :effect
       (and (not (at ?r ?from))
            (at ?r ?to)))
@@ -62,5 +57,6 @@
            (not (unloaded ?r)))
     :effect
       (and (not (has ?r ?c))
-           (in ?c ?loc)))
+           (in ?c ?loc)
+           (unloaded ?r)))
 )
