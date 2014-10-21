@@ -4,4 +4,4 @@ JDIR="/javagp"
 #echo ${DIR}
 echo "${@:1}"
 CLASSPATH=${DIR}${JDIR}/javagp.jar:${DIR}${JDIR}/lib/jason.jar:${DIR}${JDIR}/lib/pddl4j.jar
-java -classpath "${CLASSPATH}" -Xmx1g -jar "${DIR}${JDIR}/javagp.jar" "${@:1}"
+java -classpath "${CLASSPATH}" -Xmx3g -jar "${DIR}${JDIR}/javagp.jar" "${@:1}"

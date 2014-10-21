@@ -1,0 +1,67 @@
+-d aperture.pddl -p pb5.pddl
+SEVERE: --> The Problem has Negative Preconditions
+
+INFO: Running planner, maximum memory: 2,731MB
+INFO: Expanding graph
+INFO: Goals not possible with 1 steps
+INFO: Expanding graph
+INFO: Goals not possible with 2 steps
+INFO: Expanding graph
+INFO: -> Initial State was changed: Maintenance Actions and Mutexes from Level 0 until current Level
+INFO: Goals not possible with 1 steps
+INFO: Expanding graph
+INFO: Goals not possible with 2 steps
+INFO: Expanding graph
+INFO: Goals not possible with 3 steps
+INFO: Expanding graph
+INFO: -> Initial State was changed: Maintenance Actions and Mutexes from Level 0 until current Level
+INFO: Goals not possible with 1 steps
+INFO: Expanding graph
+INFO: Goals not possible with 2 steps
+INFO: Expanding graph
+INFO: Goals not possible with 3 steps
+INFO: Expanding graph
+INFO: Goals not possible with 4 steps
+INFO: Expanding graph
+INFO: Goals not possible with 5 steps
+INFO: Expanding graph
+INFO: Goals not possible with 6 steps
+INFO: Expanding graph
+INFO: Goals not possible with 7 steps
+INFO: Expanding graph
+INFO: Goals not possible with 8 steps
+INFO: Expanding graph
+INFO: Goals not possible with 9 steps
+INFO: Expanding graph
+INFO: Goals not possible with 10 steps
+INFO: Expanding graph
+INFO: Extracting solution
+INFO: Plan not found with 11 steps
+INFO: Expanding graph
+INFO: Extracting solution
+INFO: Plan not found with 12 steps
+INFO: Expanding graph
+INFO: Extracting solution
+INFO: Plan not found with 13 steps
+INFO: Expanding graph
+INFO: Extracting solution
+INFO: Plan found with 14 steps
+INFO: Planning took 1038ms ( 1s )
+INFO: Total memory used: 88.5MB
+INFO: Plan found:
+exit(atlas,r1,h1)
+move(atlas,h1,h3)
+enter(atlas,h3,r3)
+pickup(atlas,c2,r3)
+exit(atlas,r3,h3)
+move(atlas,h3,h1)
+enter(atlas,h1,r1)
+drop(atlas,c2,r1)
+exit(atlas,r1,h1)
+enter(atlas,h1,r2)
+pickup(atlas,c1,r2)
+exit(atlas,r2,h1)
+enter(atlas,h1,r1)
+drop(atlas,c1,r1)
+
+INFO: Plan length: 14

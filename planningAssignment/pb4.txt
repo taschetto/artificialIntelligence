@@ -1,0 +1,33 @@
+-d aperture.pddl -p pb4.pddl
+SEVERE: --> The Problem has Negative Preconditions
+
+INFO: Running planner, maximum memory: 2,731MB
+INFO: Expanding graph
+INFO: Goals not possible with 1 steps
+INFO: Expanding graph
+INFO: Goals not possible with 2 steps
+INFO: Expanding graph
+INFO: -> Initial State was changed: Maintenance Actions and Mutexes from Level 0 until current Level
+INFO: Goals not possible with 1 steps
+INFO: Expanding graph
+INFO: Goals not possible with 2 steps
+INFO: Expanding graph
+INFO: Goals not possible with 3 steps
+INFO: Expanding graph
+INFO: Goals not possible with 4 steps
+INFO: Expanding graph
+INFO: Goals not possible with 5 steps
+INFO: Expanding graph
+INFO: Extracting solution
+INFO: Plan found with 6 steps
+INFO: Planning took 352ms ( 0s )
+INFO: Total memory used: 88.5MB
+INFO: Plan found:
+exit(atlas,r1,h1)
+enter(atlas,h1,r2)
+pickup(atlas,c,r2)
+exit(atlas,r2,h1)
+enter(atlas,h1,r1)
+drop(atlas,c,r1)
+
+INFO: Plan length: 6

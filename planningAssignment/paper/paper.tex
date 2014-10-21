@@ -24,18 +24,18 @@ Porto Alegre, Rio Grande do Sul 90619-900}
 
 \maketitle
 \begin{abstract}
-Este artigo apresenta a modelagem, em linguagem PDDL, de um mundo (domínio) baseado nas regras do jogo Portal 
-(desenvolvido pela Valve) e de fases (problemas) dentro do contexto do domínio. Após, apresenta-se uma análise dos 
+Este artigo apresenta a modelagem, em linguagem PDDL, de um mundo (domínio) baseado nas regras do jogo Portal
+(desenvolvido pela Valve) e de fases (problemas) dentro do contexto do domínio. Após, apresenta-se uma análise dos
 resultados obtidos ao solucionar os problemas com o algoritmo Graph Plan, implementado pela ferramenta JavaGP.
 \end{abstract}
 
 \section{Introdução}
 
-Este artigo apresenta uma modelagem, em linguagem PDDL, de um mundo (domínio) baseado nas regras do jogo Portal 
-(desenvolvido pela Valve). Este mundo é composto por localizações, podendo elas serem salas ou corredores. Além disso, 
+Este artigo apresenta uma modelagem, em linguagem PDDL, de um mundo (domínio) baseado nas regras do jogo Portal
+(desenvolvido pela Valve). Este mundo é composto por localizações, podendo elas serem salas ou corredores. Além disso,
 um ou mais cubos podem estar posicionados nestas salas e corredores.
 
-Neste contexto, o robô ATLAS deve realizar uma tarefa: à partir da sua posição inicial, recolher cada cubo e levá-lo 
+Neste contexto, o robô ATLAS deve realizar uma tarefa: à partir da sua posição inicial, recolher cada cubo e levá-lo
 até a uma posição de destino, i. e., uma localização específica. Porém, Atlas deve seguir algumas regras. São elas:
 
 \begin{itemize}
@@ -70,7 +70,7 @@ O polimorfismo será útil na hora de utilizar parâmetros tipados nos predicado
 
 \subsection{Predicados}
 
-Com base na especificação de domínio e nos tipos previamente definidos, alguns predicados são necessários compor um 
+Com base na especificação de domínio e nos tipos previamente definidos, alguns predicados são necessários compor um
 estado válido do domínio. São eles:
 
 \begin{description}
@@ -84,80 +84,73 @@ estado válido do domínio. São eles:
 \subsection{Ações}
 
 \begin{description}
-\item[\texttt{enter}] \hfill\\ 
-  Permite que o robô, estando localizado em um corredor, adentre em uma sala conectada à este corredor. O efeito é a 
-  troca na localização do robô.
+\item[\texttt{enter}] \hfill\\
+  Permite que o robô entre em uma sala à partir de um corredor adjacente.
     \begin{description}
       \item[Parâmetros] \hfill\\
         \texttt{?r - robot\\?from - hallway\\?to - room}
       \item[Pré-condições] \hfill\\
-        \texttt{at ?r ?from\\connected ?from ?to}
+        O robô \texttt{?r} está localizado no corredor \texttt{?from}; há uma conexão entre o corredor \texttt{?from} e a sala \texttt{?to}.
       \item[Efeitos] \hfill\\
-        \texttt{not (at ?r ?from)\\at ?r ?to}
+        O robô \texttt{?r} não está mais localizado no corredor \texttt{?from}; o robô passa a estar localizado na sala \texttt{?to}.
     \end{description}
 
 \item[\texttt{exit}] \hfill\\
-  Permite que o robô, estando localizado em uma sala, saia da mesma para um corredor conectado à esta sala. O efeito é 
-  a troca na localização do robô.
+  Permite que o robô saia de uma sala para um corredor adjacente.
     \begin{description}
       \item[Parâmetros] \hfill\\
         \texttt{?r - robot\\?from - room\\?to - hallway}
       \item[Pré-condições] \hfill\\
-        \texttt{at ?r ?from\\connected ?from ?to}
+        O robô \texttt{?r} está localizado na sala \texttt{?from}; há uma conexão entre a sala \texttt{?from} e o corredor \texttt{?to}.
       \item[Efeitos] \hfill\\
-        \texttt{not (at ?r ?from)\\at ?r ?to}
+        O robô \texttt{?r} não está mais localizado na sala \texttt{?from}; o robô passa a estar localizado no corredor \texttt{?to}.
     \end{description}
 
 \item[\texttt{move}] \hfill\\
-  Permite que o robô, estando em um corredor, mova-se para outro corredor conectado ao atual. O efeito é a troca na 
-  localização do robô.
+  Permite que o robô mova-se entre corredores adjacentes.
     \begin{description}
       \item[Parâmetros] \hfill\\
         \texttt{?r - robot\\?from ?to - hallway}
       \item[Pré-condições] \hfill\\
-        \texttt{at ?r ?from\\connected ?from ?to}
+        O robô \texttt{?r} está localizado no corredor \texttt{?from}; há uma conexão entre os corredores \texttt{?from} e \texttt{?to}.
       \item[Efeitos] \hfill\\
-        \texttt{not (at ?r ?from)\\at ?r ?to}
+        O robô \texttt{?r} não está mais localizado no corredor \texttt{?from}; o robô passa a estar localizado no corredor \texttt{?to}.
     \end{description}
 
 \item[\texttt{pickup}] \hfill\\
-  Permite que o robô, caso não esteja carregando nenhum cubo, pegue um cubo que esteja na mesma localização que a sua. 
-  Como efeito tem-se que o cubo não estará mais na localização e sim de posse do robô. Além disso também há o efeito e 
-  que o robô está carregando um cubo qualquer.
+  Permite que o robô carregue um cubo.
     \begin{description}
       \item[Parâmetros] \hfill\\
         \texttt{?r - robot\\?c - cube\\?loc - location}
       \item[Pré-condições] \hfill\\
-        \texttt{at ?r ?loc\\in ?c ?loc\\not (has ?r ?c)\\unloaded ?r}
+        O robô \texttt{?r} está na mesma localização do cubo \texttt{?c}; \texttt{?r} não está carregando \texttt{?c}; \texttt{?r} não está carregando cubo algum.
       \item[Efeitos] \hfill\\
-        \texttt{has ?r ?c\\not (in ?c ?loc)\\not (unloaded ?r)}
+        O robô \texttt{?r} está carregando o cubo \texttt{?c}; \texttt{?c} não está mais na localização anterior; \texttt{?r} está carregando algum cubo.
     \end{description}
 
 \item[\texttt{enter}] \hfill\\
-  Permite que o robô, caso esteja carregando um cubo, solte-o na localização atual do robô. O efeito é que o cubo não 
-  está mais de posse do robô, o robô não carrega nenhum cubo e a localização do cubo é a localização na qual ele foi 
-  largado.
+  Permite que o robô largue um cubo carregado.
     \begin{description}
       \item[Parâmetros] \hfill\\
         \texttt{?r - robot\\?c - cube\\?loc - location}
       \item[Pré-condições] \hfill\\
-        \texttt{at ?r ?loc\\has ?r ?c\\not (unloaded ?r)}
+        O robô \texttt{?r} está em uma localização \texttt{?loc}; \texttt{?r} está carregando o cubo \texttt{?c}; \texttt{?r} está carregando algum cubo.
       \item[Efeitos] \hfill\\
-        \texttt{not (has ?r ?c)\\in ?c ?loc\\unloaded ?r}
+        O robô \texttt{?r} não está mais carregando o cubo \texttt{?c}; \texttt{?c} está localizado em \texttt{?loc}; \texttt{?r} não está carregando cubo algum.
     \end{description}
 \end{description}
 
 \section{Formalização dos Problemas}
 
-Após a modelagem do domínio podem ser definidos diferentes problemas sobre o domínio. Um problem é composto por três subconjuntos descritivos:
+Após a modelagem do domínio podem ser definidos diferentes problemas sobre o mesmo. Um problem é composto por três subconjuntos descritivos:
 
 \begin{description}
-\item[Objetos]\hfill\\O robô ATLAS em si; quantos e quais cubos; quantas e quais localizações (corredores e salas);
-\item[Estado Inicial]\hfill\\A posição inicial do robô; a posição inicial dos cubos; as conexões existentes entre localizações e o fato de que o robô não carrega nada;
-\item[Objetivo]\hfill\\A posição final do robô; a posição final de cada um dos cubos.
+  \item[Objetos]\hfill\\O robô ATLAS em si; os cubos; os corredores; as salas;
+  \item[Estado Inicial]\hfill\\Fatos sobre os objetos que expressem (em predicados): a posição inicial do robô; a posição inicial dos cubos; as conexões\footnote{O predicado \texttt{connected} deve ser definido em ambas as direções (\texttt{a-b} e \texttt{b-a}) de uma conexão entre localizações. Isto é necessário devido à limitação do JavaGP em realizar o parse de pré-condições disjuntivas. Neste artigo o fato para \texttt{b-a} é omitido a fim de preservar a legibilidade.} existentes entre localizações e o fato de que o robô não carrega cubo algum;
+  \item[Objetivo]\hfill\\Fatos sobre os objetos que expressem (em predicados): a posição final do robô; a posição final de cada um dos cubos.
 \end{description}
 
-\subsection{Problema \#1\footnote{O predicado \texttt{connected} deve ser definido em ambas as direções (\texttt{a-b} e \texttt{b-a}) de uma conexão entre localizações. Isto se dá devido à limitação do JavaGP em realizar o parse de pré-condições disjuntivas. Neste artigo o fato para \texttt{b-a} é omitido a fim de preservar a legibilidade.}}
+\subsection{Problema \#1}
 \begin{description}
   \item[Objetos]\hfill\\
     \texttt{atlas - robot\\h1 h2 h3 - hallway\\r - room\\c - cube}
@@ -189,27 +182,28 @@ Após a modelagem do domínio podem ser definidos diferentes problemas sobre o d
 
 \section{Experimentação e Análise de Resultados}
 
-Para encontrar a solução de cada problema foi utilizada a ferramenta JavaGP\footnote{http://javagp.sf.net}. O JavaGP 
-implementa o algoritmo GraphPlan e objetiva encontrar um plano - i. e. uma sequência de passos - que resolva o 
+Para encontrar a solução de cada problema foi utilizada a ferramenta JavaGP\footnote{http://javagp.sf.net}. O JavaGP
+implementa o algoritmo GraphPlan e objetiva encontrar um plano - i. e. uma sequência de passos - que resolva o
 problema para o domínio especificado.
 
 O JavaGP foi capaz de encontrar um plano em tempo hábil para os problemas \#1, \#2 e \#3, com tamanho do plano de 6, 24 e 23 passos respectivamente. Outros problemas foram especificados e testados, dando origem à tabela abaixo: \\
 \\
 \begin{tabular}{l*{6}{c}r}
-Problema              & Locations & Cubes & Passos & Tempo (ms) \\
+\#  & Loc. & Cubos & Passos & Tempo (ms) & Memória \\
 \hline
-\#1                   &         4 &     1 &      6 &        317 \\
-\#2                   &         7 &     3 &     24 &       4902 \\
-\#3                   &        13 &     3 &     23 &       7801 \\
+1  &     4 &     1 &      6 &        317 &  88.5MB \\
+2        7 &     3 &     24 &       4902 & 558.5MB \\
+3  &    13 &     3 &     23 &       7801 &   855MB \\
 \hline
-\#4                   &         4 &     1 &     XX &        369 \\
-\#5                   &         7 &     2 &     XX &       1082 \\
-\#6                   &        10 &     3 &     XX &      22738 \\
-\#7                   &        12 &     4 &     XX &      XXXXX \\
-\end{tabular}
+4  &     4 &     1 &      6 &        369 &   88.5MB \\
+5  &     7 &     2 &     14 &       1082 &   88.5MB \\
+6  &    10 &     3 &     24 &      22738 & 1152.5MB \\
+\end{tabular} \\\\
+
+É possível observar que pequenas alterações no tamanho/complexidade do problema podem causas aumentos significativos no tempo de execução e consumo de memória do JavaGP. Além do tamanho do problema, a topologia do problema também possui é um fator preponderante. Por exemplo, o problema \#3 tem mais localizações do que o problema \#6, porém o algoritmo demorou menos e ocupou menos memória para este problema. A diferença entre eles é a topologia - ou seja, a ligação entre as diversas salas e corredores que formam o ambiente.
 
 \section{Conclusão}
 
-Conclusão.
+Em fase dos resultados, podemos observar que a modelagem de domínios e problemas em linguagem PDDL e aplicação do algoritmo de GraphPlan são uma ferramenta poderosa e versátil para a realização de planos. A linguagem PDDL é uma forma bastante intuitiva e de alto nível, capaz de expressar domínios de forma precisa, coesa e agradável para o usuário. Ja o algoritmo GraphPlan é capaz de fornecer uma solução em tempo hábil - porém somente para problemas de relativa baixa complexidade. Em exemplos mais complexos, com muitas localizações e cubos, o JavaGP estourou a memória da pilha da JVM - mesmo tendo especificado para usar até 4 GB de memória. Entretanto, também foi possível observar que a topologia do problema pode torná-lo mais complexo - portanto, torna-se importante o estudo prévio do problema e, se for possível, alguma transformação para torná-lo mais "adaptado" ao algoritmo e, assim, melhorar o seu desempenho.
 
 \end{document}
