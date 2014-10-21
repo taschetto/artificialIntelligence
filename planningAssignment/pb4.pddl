@@ -10,15 +10,12 @@
   (:init (at atlas r1)
          (unloaded atlas)
          (in c r2)
-
          (connected h1 r1) (connected r1 h1)
          (connected h1 r2) (connected r2 h1)
          (connected h2 r1) (connected r1 h2)
-         (connected h2 r2) (connected r2 h2)
-  )
+         (connected h2 r2) (connected r2 h2))
 
   (:goal
     (and (at atlas r1)
-         (in c r1))
-  )
+         (in c r1)))
 )

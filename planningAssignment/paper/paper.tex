@@ -20,19 +20,23 @@
 Acadêmico da Faculdade de Informática da\\
 Pontifícia Universidade Católica do Rio Grande do Sul\\
 Av. Ipiranga, 6681\\
-Porto Alegre, Rio Grande do Sul 90619-900\\
-}
+Porto Alegre, Rio Grande do Sul 90619-900}
 
 \maketitle
 \begin{abstract}
-Este artigo apresenta a modelagem, em linguagem PDDL, de um mundo (domínio) baseado nas regras do jogo Portal (desenvolvido pela Valve) e de fases (problemas) dentro do contexto do domínio. Após, apresenta-se uma análise dos resultados obtidos ao solucionar os problemas com o algoritmo Graph Plan, implementado pela ferramenta JavaGP.
+Este artigo apresenta a modelagem, em linguagem PDDL, de um mundo (domínio) baseado nas regras do jogo Portal 
+(desenvolvido pela Valve) e de fases (problemas) dentro do contexto do domínio. Após, apresenta-se uma análise dos 
+resultados obtidos ao solucionar os problemas com o algoritmo Graph Plan, implementado pela ferramenta JavaGP.
 \end{abstract}
 
 \section{Introdução}
 
-Este artigo apresenta uma modelagem, em linguagem PDDL, de um mundo (domínio) baseado nas regras do jogo Portal (desenvolvido pela Valve). Este mundo é composto por localizações, podendo elas serem salas ou corredores. Além disso, um ou mais cubos podem estar posicionados nestas salas e corredores.
+Este artigo apresenta uma modelagem, em linguagem PDDL, de um mundo (domínio) baseado nas regras do jogo Portal 
+(desenvolvido pela Valve). Este mundo é composto por localizações, podendo elas serem salas ou corredores. Além disso, 
+um ou mais cubos podem estar posicionados nestas salas e corredores.
 
-Neste contexto, o robô ATLAS deve realizar uma tarefa: à partir da sua posição inicial, recolher cada cubo e levá-lo até a uma posição de destino, i. e., uma sala específica. Porém, Atlas deve seguir algumas regras. São elas:
+Neste contexto, o robô ATLAS deve realizar uma tarefa: à partir da sua posição inicial, recolher cada cubo e levá-lo 
+até a uma posição de destino, i. e., uma localização específica. Porém, Atlas deve seguir algumas regras. São elas:
 
 \begin{itemize}
 \item ATLAS pode mover-se livremente entre corredores adjacentes, i. e., que possuem conexão entre si;
@@ -55,7 +59,7 @@ Neste contexto, o robô ATLAS deve realizar uma tarefa: à partir da sua posiç�
 
 \subsection{Tipos}
 
-No contexto do domínio em questão, a seguinte hierarquia de tipos polimórficos foi definida:
+No contexto do domínio em questão, a seguinte hierarquia de tipos polimórficos é definida:
 
 \begin{description}
 \item[\texttt{robot location cube - object}] \hfill\\ \texttt{robot}, \texttt{location} e \texttt{cube} são especializações do tipo básico \texttt{object}.
@@ -66,106 +70,143 @@ O polimorfismo será útil na hora de utilizar parâmetros tipados nos predicado
 
 \subsection{Predicados}
 
-Com base na especificação de domínio e nos tipos previamente definidos, alguns predicados são necessários compor um estado válido do domínio. São eles:
+Com base na especificação de domínio e nos tipos previamente definidos, alguns predicados são necessários compor um 
+estado válido do domínio. São eles:
 
 \begin{description}
-\item[\texttt{at ?r - robot ?loc - location}] \hfill\\ Verdadeiro caso o robô esteja na localização especificada.
-\item[\texttt{connected ?loc1 ?loc2 - location}] \hfill\\ Verdadeiro caso as duas localizações especificadas possuam conexão entre si.
-\item[\texttt{in ?c - cube ?loc - location}] \hfill\\ Verdadeiro caso um cubo esteja na localização especificada.
-\item[\texttt{has ?r - robot ?c - cube}] \hfill\\ Verdadeiro caso o robô esteja carregando o cubo específicado.
-\item[\texttt{unloaded ?r - robot}] \hfill\\ Verdadeiro caso o robô não esteja carregando nenhum cubo.
+\item[\texttt{at ?r - robot ?loc - location}]\hfill\\ Verdadeiro caso o robô esteja na localização especificada. Do contrário, falso.
+\item[\texttt{connected ?loc1 ?loc2 - location}]\hfill\\ Verdadeiro caso as duas localizações especificadas possuam conexão entre si. Do contrário, falso.
+\item[\texttt{in ?c - cube ?loc - location}]\hfill\\ Verdadeiro caso um cubo esteja na localização especificada. Do contrário, falso.
+\item[\texttt{has ?r - robot ?c - cube}]\hfill\\ Verdadeiro caso o robô esteja carregando o cubo específicado. Do contrário, falso.
+\item[\texttt{unloaded ?r - robot}]\hfill\\ Verdadeiro caso o robô não esteja carregando nenhum cubo. Do contrário, falso.
 \end{description}
 
 \subsection{Ações}
 
-\begin{verbatim}
-(:action enter
-  :parameters (
-    ?r    - robot
-    ?from - hallway
-    ?to   - room)
-  :precondition
-    (and (at ?r ?from)
-         (connected ?from ?to))
-  :effect
-    (and (not (at ?r ?from))
-         (at ?r ?to)))
-\end{verbatim}
+\begin{description}
+\item[\texttt{enter}] \hfill\\ 
+  Permite que o robô, estando localizado em um corredor, adentre em uma sala conectada à este corredor. O efeito é a 
+  troca na localização do robô.
+    \begin{description}
+      \item[Parâmetros] \hfill\\
+        \texttt{?r - robot\\?from - hallway\\?to - room}
+      \item[Pré-condições] \hfill\\
+        \texttt{at ?r ?from\\connected ?from ?to}
+      \item[Efeitos] \hfill\\
+        \texttt{not (at ?r ?from)\\at ?r ?to}
+    \end{description}
 
-\begin{verbatim}
-(:action exit
-  :parameters (
-    ?r    - robot
-    ?from - room
-    ?to   - hallway)
-  :precondition
-    (and (at ?r ?from)
-         (connected ?from ?to))
-  :effect
-    (and (not (at ?r ?from))
-         (at ?r ?to)))
-\end{verbatim}
+\item[\texttt{exit}] \hfill\\
+  Permite que o robô, estando localizado em uma sala, saia da mesma para um corredor conectado à esta sala. O efeito é 
+  a troca na localização do robô.
+    \begin{description}
+      \item[Parâmetros] \hfill\\
+        \texttt{?r - robot\\?from - room\\?to - hallway}
+      \item[Pré-condições] \hfill\\
+        \texttt{at ?r ?from\\connected ?from ?to}
+      \item[Efeitos] \hfill\\
+        \texttt{not (at ?r ?from)\\at ?r ?to}
+    \end{description}
 
-\begin{verbatim}
-(:action move
-  :parameters (
-    ?r        - robot
-    ?from ?to - hallway)
-  :precondition
-    (and (at ?r ?from)
-         (connected ?from ?to))
-  :effect
-    (and (not (at ?r ?from))
-         (at ?r ?to)))
-\end{verbatim}
+\item[\texttt{move}] \hfill\\
+  Permite que o robô, estando em um corredor, mova-se para outro corredor conectado ao atual. O efeito é a troca na 
+  localização do robô.
+    \begin{description}
+      \item[Parâmetros] \hfill\\
+        \texttt{?r - robot\\?from ?to - hallway}
+      \item[Pré-condições] \hfill\\
+        \texttt{at ?r ?from\\connected ?from ?to}
+      \item[Efeitos] \hfill\\
+        \texttt{not (at ?r ?from)\\at ?r ?to}
+    \end{description}
 
-\begin{verbatim}
-(:action pickup
-  :parameters (
-    ?r   - robot
-    ?c   - cube
-    ?loc - location)
-  :precondition
-    (and (at ?r ?loc)
-         (in ?c ?loc)
-         (not (has ?r ?c))
-         (unloaded ?r))
-  :effect
-    (and (has ?r ?c)
-         (not (in ?c ?loc))
-         (not (unloaded ?r))))
-\end{verbatim}
+\item[\texttt{pickup}] \hfill\\
+  Permite que o robô, caso não esteja carregando nenhum cubo, pegue um cubo que esteja na mesma localização que a sua. 
+  Como efeito tem-se que o cubo não estará mais na localização e sim de posse do robô. Além disso também há o efeito e 
+  que o robô está carregando um cubo qualquer.
+    \begin{description}
+      \item[Parâmetros] \hfill\\
+        \texttt{?r - robot\\?c - cube\\?loc - location}
+      \item[Pré-condições] \hfill\\
+        \texttt{at ?r ?loc\\in ?c ?loc\\not (has ?r ?c)\\unloaded ?r}
+      \item[Efeitos] \hfill\\
+        \texttt{has ?r ?c\\not (in ?c ?loc)\\not (unloaded ?r)}
+    \end{description}
 
-\begin{verbatim}
-(:action drop
-  :parameters (
-    ?r   - robot
-    ?c   - cube
-    ?loc - location)
-  :precondition
-    (and (at ?r ?loc)
-         (has ?r ?c)
-         (not (unloaded ?r)))
-  :effect
-    (and (not (has ?r ?c))
-         (in ?c ?loc)
-         (unloaded ?r)))
-\end{verbatim}
+\item[\texttt{enter}] \hfill\\
+  Permite que o robô, caso esteja carregando um cubo, solte-o na localização atual do robô. O efeito é que o cubo não 
+  está mais de posse do robô, o robô não carrega nenhum cubo e a localização do cubo é a localização na qual ele foi 
+  largado.
+    \begin{description}
+      \item[Parâmetros] \hfill\\
+        \texttt{?r - robot\\?c - cube\\?loc - location}
+      \item[Pré-condições] \hfill\\
+        \texttt{at ?r ?loc\\has ?r ?c\\not (unloaded ?r)}
+      \item[Efeitos] \hfill\\
+        \texttt{not (has ?r ?c)\\in ?c ?loc\\unloaded ?r}
+    \end{description}
+\end{description}
 
 \section{Formalização dos Problemas}
 
-Problemas.
+Após a modelagem do domínio podem ser definidos diferentes problemas sobre o domínio. Um problem é composto por três subconjuntos descritivos:
 
-\section{Experimentação}
+\begin{description}
+\item[Objetos]\hfill\\O robô ATLAS em si; quantos e quais cubos; quantas e quais localizações (corredores e salas);
+\item[Estado Inicial]\hfill\\A posição inicial do robô; a posição inicial dos cubos; as conexões existentes entre localizações e o fato de que o robô não carrega nada;
+\item[Objetivo]\hfill\\A posição final do robô; a posição final de cada um dos cubos.
+\end{description}
 
-Experimentação.
+\subsection{Problema \#1\footnote{O predicado \texttt{connected} deve ser definido em ambas as direções (\texttt{a-b} e \texttt{b-a}) de uma conexão entre localizações. Isto se dá devido à limitação do JavaGP em realizar o parse de pré-condições disjuntivas. Neste artigo o fato para \texttt{b-a} é omitido a fim de preservar a legibilidade.}}
+\begin{description}
+  \item[Objetos]\hfill\\
+    \texttt{atlas - robot\\h1 h2 h3 - hallway\\r - room\\c - cube}
+  \item[Estado Inicial]\hfill\\
+    \texttt{at atlas h1\\unloaded atlas\\in c r\\connected h1 h2\\connected h2 h3\\connected h2 r}
+  \item[Objetivo]\hfill\\
+    \texttt{at atlas h3\\in c h3}
+\end{description}
 
-PB1 6   317ms
-PB2 24  4902ms
-PB3 23  7801ms
-PB4 6   369ms
-PB5 14  1082ms
-PB6 24  22738ms
+\subsection{Problema \#2}
+\begin{description}
+  \item[Objetos]\hfill\\
+    \texttt{atlas - robot\\h1 h2 h3 h4 - hallway\\r1 r2 r3 - room\\c1 c2 c3 - cube}
+  \item[Estado Inicial]\hfill\\
+    \texttt{at atlas h4\\unloaded atlas\\in c1 h1\\in c2 r1\\in c3 r2\\connected h1 h2\\connected h2 h3\\connected h3 h4\\connected r1 h2\\connected r2 h2\\connected r3 h4}
+  \item[Objetivo]\hfill\\
+    \texttt{at atlas h4\\in c1 h4\\in c2 h4\\in c3 h4}
+\end{description}
+
+\subsection{Problema \#3}
+\begin{description}
+  \item[Objetos]\hfill\\
+    \texttt{atlas - robot\\h1 h2 h3 h4 h5 h6 h7 h8 h9 - hallway\\r1 r2 r3 r4 - room\\c1 c2 c3 - cube}
+  \item[Estado Inicial]\hfill\\
+    \texttt{at atlas h1\\unloaded atlas\\in c1 r2\\in c2 h4\\in c3 r4\\connected h1 h2\\connected h1 h3\\connected h2 h4\\connected h3 h5\\connected h4 h6\\connected h5 h6\\connected h6 h7\\connected h6 h8\\connected h8 h9\\connected r1 h1\\connected r1 h2\\connected r2 h4\\connected r2 h5\\connected r3 h7\\connected r4 h8}
+  \item[Objetivo]\hfill\\
+    \texttt{at atlas h9\\in c1 h9\\in c2 h9\\in c3 h9}
+\end{description}
+
+\section{Experimentação e Análise de Resultados}
+
+Para encontrar a solução de cada problema foi utilizada a ferramenta JavaGP\footnote{http://javagp.sf.net}. O JavaGP 
+implementa o algoritmo GraphPlan e objetiva encontrar um plano - i. e. uma sequência de passos - que resolva o 
+problema para o domínio especificado.
+
+O JavaGP foi capaz de encontrar um plano em tempo hábil para os problemas \#1, \#2 e \#3, com tamanho do plano de 6, 24 e 23 passos respectivamente. Outros problemas foram especificados e testados, dando origem à tabela abaixo: \\
+\\
+\begin{tabular}{l*{6}{c}r}
+Problema              & Locations & Cubes & Passos & Tempo (ms) \\
+\hline
+\#1                   &         4 &     1 &      6 &        317 \\
+\#2                   &         7 &     3 &     24 &       4902 \\
+\#3                   &        13 &     3 &     23 &       7801 \\
+\hline
+\#4                   &         4 &     1 &     XX &        369 \\
+\#5                   &         7 &     2 &     XX &       1082 \\
+\#6                   &        10 &     3 &     XX &      22738 \\
+\#7                   &        12 &     4 &     XX &      XXXXX \\
+\end{tabular}
 
 \section{Conclusão}
 

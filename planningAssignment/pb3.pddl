@@ -21,19 +21,16 @@
          (connected h6 h7) (connected h7 h6)
          (connected h6 h8) (connected h8 h6)
          (connected h8 h9) (connected h9 h8)
-
          (connected r1 h1) (connected h1 r1)
          (connected r1 h2) (connected h2 r1)
          (connected r2 h4) (connected h4 r2)
          (connected r2 h5) (connected h5 r2)
          (connected r3 h7) (connected h7 r3)
-         (connected r4 h8) (connected h8 r4)
-  )
+         (connected r4 h8) (connected h8 r4))
 
   (:goal
     (and (at atlas h9)
          (in c1 h9)
          (in c2 h9)
-         (in c3 h9))
-  )
+         (in c3 h9)))
 )
