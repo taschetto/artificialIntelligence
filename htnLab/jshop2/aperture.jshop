@@ -1,0 +1,67 @@
+(defdomain aperture
+  (:requirements :strips :typing :negative-preconditions)
+
+  (:types robot location cube - object
+          hallway room - location)
+
+  (:predicates  (at ?r - robot ?loc - location)
+                (connected ?loc1 ?loc2 - location)
+                (in ?c - cube ?loc - location)
+                (has ?r - robot ?c - cube)
+                (unloaded ?r - robot))
+
+  (:operator (!enter ?r ?from ?to)
+    ((at ?r ?from)
+     (connected ?from ?to)
+    )
+
+    ((at ?r ?from))
+
+    ((at ?r ?to))
+  )
+
+  (:operator (!exit ?r ?from ?to)
+    ((at ?r ?from)
+     (connected ?from ?to))
+
+    ((at ?r ?from))
+
+    ((at ?r ?to))
+  )
+
+  (:operator (!move ?r ?from ?to)
+    ((at ?r ?from)
+     (connected ?from ?to)
+    )
+
+    ((at ?r ?from))
+    
+    ((at ?r ?to))
+  )
+
+  (:operator (!pickup ?r ?c ?loc)
+    ((at ?r ?loc)
+     (in ?c ?loc)
+     (not (has ?r ?c))
+     (unloaded ?r)
+    )
+
+    ((in ?c ?loc)
+     (unloaded ?r))
+
+    ((has ?r ?c))
+  )
+
+  (:operator (!drop ?r ?c ?loc)
+    ((at ?r ?loc)
+     (has ?r ?c)
+     (not (unloaded ?r))
+    )
+    
+    ((has ?r ?c))
+
+    ((in ?c ?loc)
+     (unloaded ?r)
+    )
+  )
+)

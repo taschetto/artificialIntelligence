@@ -1,0 +1,13 @@
+5
+longdistance
+airport
+ticket
+at
+hastaxi
+1
+travel
+4
+!getticket
+!fly
+!gettaxi
+!ridetaxi
