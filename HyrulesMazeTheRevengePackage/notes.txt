@@ -1,0 +1,12 @@
+identificar cada uma das "coisas" no método que tem os "to-dos"
+criar uma classe que encapsule o aprendizado por reforço
+com um metodo para atualização do resultado (que vimos em aula)
+nesta classe deve ter um metodo para computar a política nova (update)
+
+vamos ter que trocar a politica (no instanciador do player) por uma dynamic policy computada pelo nosso algoritmo que vai traduzir nossos valores computados no update em seleções de ações
+e implementar um método que extraia a política dos valores que aí o agente terá o comportamento de não ir somente para o norte
+
+o que pode ajudar: (AUMENTAR  A VELOCIDADE DA ANIMAÇÃO)
+salvem as politicas ou os valores num arquivo pra quando carregar o agente já saia com a política aprendida
+
+como guardar os queue values: uma tabela que diz para cada estado e cada ação um valor para saber que um estado ja foi computado e não precisa fazer novamente (usar um hashma
