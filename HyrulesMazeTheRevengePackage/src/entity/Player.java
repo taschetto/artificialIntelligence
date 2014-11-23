@@ -302,7 +302,7 @@ public class Player extends MapObject {
 			Util.gsm.init();
 			totalReward = 0;
 			
-			this.policy = tdlr.recalculatePolicy();
+			this.policy = tdlr.recalculatePolicy(tileMap);
 		}
 		
 		totalReward += reward;

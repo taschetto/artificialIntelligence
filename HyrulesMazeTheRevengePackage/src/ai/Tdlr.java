@@ -1,11 +1,25 @@
 package ai;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
+import tilemap.TileMap;
+
 public class Tdlr {
+	TileMap tileMap = null;
 	
 	private HashMap<State, Integer> N = new HashMap<>();
 	private HashMap<State, Float> U = new HashMap<>();
+	
+	HashMap<Action, Action[]> sideEffects = new HashMap<>();
+	
+	public Tdlr()
+	{
+		sideEffects.put(Action.UP, new Action[]{Action.LEFT, Action.RIGHT});
+		sideEffects.put(Action.DOWN, new Action[]{Action.RIGHT, Action.LEFT});
+		sideEffects.put(Action.LEFT, new Action[]{Action.DOWN, Action.UP});
+		sideEffects.put(Action.RIGHT, new Action[]{Action.UP, Action.DOWN});
+	}
 	
 	private float alpha(int n)
 	{
@@ -35,8 +49,9 @@ public class Tdlr {
 		}		
 	}
 	
-	public DynamicPolicy recalculatePolicy()
+	public DynamicPolicy recalculatePolicy(TileMap tileMap)
 	{
+		this.tileMap = tileMap;
 		DynamicPolicy dp = new DynamicPolicy();
 		
 		// TODO
@@ -44,12 +59,12 @@ public class Tdlr {
 		return dp;
 	}
 	
-	private Action V(State s)
+	private Action Pi(State s)
 	{
 		float max = Float.MIN_VALUE;
 		Action arg = Action.NONE;
 		
-		Action[] actions = new Action[]{ Action.UP, Action.DOWN, Action.LEFT, Action.RIGHT};
+		Action[] actions = availableActions(s);
 		
 		for (Action a : actions)
 		{
@@ -66,7 +81,36 @@ public class Tdlr {
 	
 	private float E(State s, Action a)
 	{
-		// TODO
-		return 0.f;
+		float value = 0.7f * successor(s, a).reward;
+		
+		for (Action se : sideEffects.get(a))
+			value += 0.15f * successor(s, se).reward;
+		
+		return value;
+	}
+	
+	private Action[] availableActions(State s)
+	{
+		ArrayList<Action> actions = new ArrayList<>();
+		
+		if (s.y > 0) actions.add(Action.UP);
+		if (s.y < tileMap.numRows - 1) actions.add(Action.DOWN);
+		if (s.x > 0) actions.add(Action.LEFT);
+		if (s.x < tileMap.numCols - 1) actions.add(Action.RIGHT);
+		
+		return (Action[]) actions.toArray();
+	}
+	
+	private State successor(State s, Action a)
+	{
+		State suc = new State(s.y, s.x, 0);
+		
+		if (a == Action.UP) suc.y--;
+		else if (a == Action.DOWN) suc.y++;
+		else if (a == Action.LEFT) suc.x--;
+		else if (a == Action.RIGHT) suc.x++;
+		
+		suc.reward = U.containsKey(suc) ? U.get(suc) : -1;
+		return suc;
 	}
 }
