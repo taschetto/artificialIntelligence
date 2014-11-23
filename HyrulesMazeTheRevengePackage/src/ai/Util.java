@@ -5,7 +5,7 @@ import gamestate.GameStateManager;
 public final class Util {
 
 	public static String map = "/maps/empty.map";
-	public static Double velocity = 2.0;
+	public static Double velocity = 10.0;
 	public static IPolicy policy = new StaticPolicy();
 	
 	

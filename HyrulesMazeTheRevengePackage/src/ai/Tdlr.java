@@ -54,7 +54,12 @@ public class Tdlr {
 		this.tileMap = tileMap;
 		DynamicPolicy dp = new DynamicPolicy();
 		
-		// TODO
+		for (int row = 0; row < this.tileMap.numRows; row++)
+			for (int col = 0; col < this.tileMap.numCols; col++)
+			{
+				State s = new State(row, col, 0);
+				dp.setAction(s, Pi(s));
+			}
 		
 		return dp;
 	}
@@ -98,7 +103,7 @@ public class Tdlr {
 		if (s.x > 0) actions.add(Action.LEFT);
 		if (s.x < tileMap.numCols - 1) actions.add(Action.RIGHT);
 		
-		return (Action[]) actions.toArray();
+		return actions.toArray(new Action[actions.size()]);
 	}
 	
 	private State successor(State s, Action a)
