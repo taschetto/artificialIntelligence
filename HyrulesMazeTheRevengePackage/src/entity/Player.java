@@ -39,6 +39,7 @@ public class Player extends MapObject {
 	
 	private HashMap<State, Integer> N = new HashMap<>();
 	private HashMap<State, Float> U = new HashMap<>();
+	State previous = null;
 	
 	public Player(TileMap tm, IPolicy chooser) {
 		super(tm);
@@ -241,7 +242,7 @@ public class Player extends MapObject {
 	
 	public void move(){
 			int currRow = (int)y / tileSize;
-			int currCol = (int)x / tileSize;
+			int currCol = (int)x / tileSize;	
 			
 			Action action = computeNextMove(currRow, currCol, tileMap.map);
 			
@@ -310,7 +311,7 @@ public class Player extends MapObject {
 		totalReward += reward;
 		
 		int currRow = (int)y / tileSize;
-		int currCol = (int)x / tileSize;
+		int currCol = (int)x / tileSize;	
 		
 		State current = new State(currRow, currCol, reward);
 		Action next = policy.nextMove(current);
@@ -318,22 +319,29 @@ public class Player extends MapObject {
 		
 		//TODO This is where the learning update should happen
 		
+		previous = current;
+		//System.out.println("Current = " + current.x + ", " + current.y);	
+		
 		if (!U.containsKey(current))
 		{
+			//System.out.println("Estado é novo! Adiciona ("+current.x+","+current.y+")!");
 			U.put(current, reward);
 		}
-		else
+		else if (previous != null)
 		{
+			//System.out.println("Estado não é novo! Vamos recalcular a utilidade de PREVIOUS ("+previous.x+","+previous.y+")!");
+			//System.out.println("Previous = " + previous.x + ", " + previous.y);
 			float gamma = 1;
-			
-			State previous = null; // estado que trouxe até current
 			
 			int n = N.containsKey(previous) ? N.get(previous) + 1 : 1;
 			N.put(previous, n);
 			
-			float updatedUtility = U.get(previous) + alpha(n) * (reward + gamma * U.get(current) - U.get(previous));
+			float uPrevious = U.get(previous);
+			float uCurrent = U.get(current);
+			
+			float updatedUtility = uPrevious + alpha(n) * (reward + gamma * uCurrent - uPrevious);
 			U.put(previous, updatedUtility);
-		}		
+		}
 		
 		return randomOutcome;
 	}
