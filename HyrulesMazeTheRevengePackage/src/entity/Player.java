@@ -3,6 +3,7 @@ package entity;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
@@ -35,6 +36,9 @@ public class Player extends MapObject {
 	private static final int LEFT = 1;
 	private static final int UP = 2;
 	private static final int DOWN = 3;
+	
+	private HashMap<State, Integer> N = new HashMap<>();
+	private HashMap<State, Float> U = new HashMap<>();
 	
 	public Player(TileMap tm, IPolicy chooser) {
 		super(tm);
@@ -271,6 +275,10 @@ public class Player extends MapObject {
 
 	}
 	
+	private float alpha(int n)
+	{
+		return 1 / (n + 1); // deixa divByZero estourar
+	}
 
 	public Action computeNextMove(int old_x, int old_y, int[][] map) {
 		float reward = 0f;
@@ -309,6 +317,23 @@ public class Player extends MapObject {
 		Action randomOutcome = tf.successor(current, next);
 		
 		//TODO This is where the learning update should happen
+		
+		if (!U.containsKey(current))
+		{
+			U.put(current, reward);
+		}
+		else
+		{
+			float gamma = 1;
+			
+			State previous = null; // estado que trouxe até current
+			
+			int n = N.containsKey(previous) ? N.get(previous) + 1 : 1;
+			N.put(previous, n);
+			
+			float updatedUtility = U.get(previous) + alpha(n) * (reward + gamma * U.get(current) - U.get(previous));
+			U.put(previous, updatedUtility);
+		}		
 		
 		return randomOutcome;
 	}
