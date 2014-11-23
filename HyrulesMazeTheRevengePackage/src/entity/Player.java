@@ -301,6 +301,8 @@ public class Player extends MapObject {
 			System.out.println("Total reward: " + totalReward);
 			Util.gsm.init();
 			totalReward = 0;
+			
+			tdlr.recalculatePolicy();
 		}
 		
 		totalReward += reward;
