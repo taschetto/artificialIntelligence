@@ -11,6 +11,7 @@ import tilemap.TileMap;
 import ai.Action;
 import ai.IPolicy;
 import ai.State;
+import ai.Tdlr;
 import ai.TransitionFunction;
 import ai.Util;
 
@@ -19,6 +20,9 @@ public class Player extends MapObject {
 	private IPolicy policy;
 	TransitionFunction tf;
 	float totalReward = 0f;
+	State previous = null;
+	
+	Tdlr tdlr = new Tdlr();
 	
 	// player stuff
 	private boolean flinching;
@@ -36,10 +40,6 @@ public class Player extends MapObject {
 	private static final int LEFT = 1;
 	private static final int UP = 2;
 	private static final int DOWN = 3;
-	
-	private HashMap<State, Integer> N = new HashMap<>();
-	private HashMap<State, Float> U = new HashMap<>();
-	State previous = null;
 	
 	public Player(TileMap tm, IPolicy chooser) {
 		super(tm);
@@ -275,11 +275,6 @@ public class Player extends MapObject {
 			}
 
 	}
-	
-	private float alpha(int n)
-	{
-		return 1 / (n + 1); // deixa divByZero estourar
-	}
 
 	public Action computeNextMove(int old_x, int old_y, int[][] map) {
 		float reward = 0f;
@@ -318,30 +313,8 @@ public class Player extends MapObject {
 		Action randomOutcome = tf.successor(current, next);
 		
 		//TODO This is where the learning update should happen
-		
-		previous = current;
-		//System.out.println("Current = " + current.x + ", " + current.y);	
-		
-		if (!U.containsKey(current))
-		{
-			//System.out.println("Estado é novo! Adiciona ("+current.x+","+current.y+")!");
-			U.put(current, reward);
-		}
-		else if (previous != null)
-		{
-			//System.out.println("Estado não é novo! Vamos recalcular a utilidade de PREVIOUS ("+previous.x+","+previous.y+")!");
-			//System.out.println("Previous = " + previous.x + ", " + previous.y);
-			float gamma = 1;
-			
-			int n = N.containsKey(previous) ? N.get(previous) + 1 : 1;
-			N.put(previous, n);
-			
-			float uPrevious = U.get(previous);
-			float uCurrent = U.get(current);
-			
-			float updatedUtility = uPrevious + alpha(n) * (reward + gamma * uCurrent - uPrevious);
-			U.put(previous, updatedUtility);
-		}
+		tdlr.updateUtilities(current, previous);
+		previous = current;		
 		
 		return randomOutcome;
 	}
