@@ -35,7 +35,38 @@ public class Tdlr {
 		}		
 	}
 	
-	public void recalculatePolicy()
+	public DynamicPolicy recalculatePolicy()
 	{
+		DynamicPolicy dp = new DynamicPolicy();
+		
+		// TODO
+		
+		return dp;
+	}
+	
+	private Action V(State s)
+	{
+		float max = Float.MIN_VALUE;
+		Action arg = Action.NONE;
+		
+		Action[] actions = new Action[]{ Action.UP, Action.DOWN, Action.LEFT, Action.RIGHT};
+		
+		for (Action a : actions)
+		{
+			float expectedValue = E(s, a);
+			if (expectedValue > max)
+			{
+				max = expectedValue;
+				arg = a;
+			}
+		}
+		
+		return arg;
+	}
+	
+	private float E(State s, Action a)
+	{
+		// TODO
+		return 0.f;
 	}
 }

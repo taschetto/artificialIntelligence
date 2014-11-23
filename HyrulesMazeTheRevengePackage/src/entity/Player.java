@@ -302,7 +302,7 @@ public class Player extends MapObject {
 			Util.gsm.init();
 			totalReward = 0;
 			
-			tdlr.recalculatePolicy();
+			this.policy = tdlr.recalculatePolicy();
 		}
 		
 		totalReward += reward;
