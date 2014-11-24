@@ -20,7 +20,7 @@ public class State {
 			return true;
 		} else {
 			State other = (State) obj;
-			return other.x == x && other.y == y && other.reward == reward;
+			return other.x == x && other.y == y; // && other.reward == reward;
 		}
 	}
 }

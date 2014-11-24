@@ -6,6 +6,9 @@ import java.util.HashMap;
 import tilemap.TileMap;
 
 public class Tdlr {
+	
+	private static Tdlr Instance;
+	
 	TileMap tileMap = null;
 	
 	private HashMap<State, Integer> N = new HashMap<>();
@@ -13,7 +16,15 @@ public class Tdlr {
 	
 	HashMap<Action, Action[]> sideEffects = new HashMap<>();
 	
-	public Tdlr()
+	public static Tdlr getInstance()
+	{
+		if (Instance == null)
+			Instance = new Tdlr();
+		
+		return Instance;
+	}
+	
+	private Tdlr()
 	{
 		sideEffects.put(Action.UP, new Action[]{Action.LEFT, Action.RIGHT});
 		sideEffects.put(Action.DOWN, new Action[]{Action.RIGHT, Action.LEFT});
@@ -23,28 +34,33 @@ public class Tdlr {
 	
 	private float alpha(int n)
 	{
-		return 1 / (n + 1); // deixa divByZero estourar
-	}	
+		return 1.f / (n + 1); // deixa divByZero estourar
+	}
+	
+	private float f(float u, float n)
+	{
+		return u;
+	}
 
 	public void updateUtilities(State current, State previous)
 	{
-		previous = current;
-		
 		if (!U.containsKey(current))
 		{
 			U.put(current, current.reward);
+			N.put(current, 0);
 		}
 		else if (previous != null)
 		{
-			float gamma = 1;
+			float gamma = 1.f;
 			
-			int n = N.containsKey(previous) ? N.get(previous) + 1 : 1;
+			int n = N.get(previous) + 1;
 			N.put(previous, n);
 			
 			float uPrevious = U.get(previous);
 			float uCurrent = U.get(current);
+			float a = alpha(n);
 			
-			float updatedUtility = uPrevious + alpha(n) * (previous.reward + gamma * uCurrent - uPrevious);
+			float updatedUtility = uPrevious + a * (previous.reward + gamma * uCurrent - f(uPrevious, n));
 			U.put(previous, updatedUtility);
 		}		
 	}
@@ -60,13 +76,46 @@ public class Tdlr {
 				State s = new State(row, col, 0);
 				dp.setAction(s, Pi(s));
 			}
+		/*****************/
+		for (int row = 0; row < this.tileMap.numRows; row++)
+		{
+			for (int col = 0; col < this.tileMap.numCols; col++)
+			{
+				State s = new State(row, col, 0);
+				System.out.printf("%5.2f ", U.containsKey(s) ? U.get(s) : 0.f);
+				
+			}
+			System.out.printf("\n");
+		}
+		
+		for (int row = 0; row < this.tileMap.numRows; row++)
+		{
+			for (int col = 0; col < this.tileMap.numCols; col++)
+			{
+				State s = new State(row, col, 0);
+				System.out.printf("%3d ", U.containsKey(s) ? N.get(s) : 0);
+				
+			}
+			System.out.printf("\n");
+		}
+		
+		for (int row = 0; row < this.tileMap.numRows; row++)
+		{
+			for (int col = 0; col < this.tileMap.numCols; col++)
+			{
+				State s = new State(row, col, 0);				
+				System.out.printf("%s ", dp.nextMove(s).toString().charAt(0));
+				
+			}
+			System.out.printf("\n");
+		}		
 		
 		return dp;
 	}
 	
 	private Action Pi(State s)
 	{
-		float max = Float.MIN_VALUE;
+		float max = Float.NEGATIVE_INFINITY;
 		Action arg = Action.NONE;
 		
 		Action[] actions = availableActions(s);
@@ -115,7 +164,7 @@ public class Tdlr {
 		else if (a == Action.LEFT) suc.x--;
 		else if (a == Action.RIGHT) suc.x++;
 		
-		suc.reward = U.containsKey(suc) ? U.get(suc) : -1;
+		suc.reward = U.containsKey(suc) ? U.get(suc) : 0;
 		return suc;
 	}
 }

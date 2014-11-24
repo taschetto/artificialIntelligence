@@ -22,7 +22,7 @@ public class Player extends MapObject {
 	float totalReward = 0f;
 	State previous = null;
 	
-	Tdlr tdlr = new Tdlr();
+	Tdlr tdlr;
 	
 	// player stuff
 	private boolean flinching;
@@ -45,6 +45,7 @@ public class Player extends MapObject {
 		super(tm);
 		//TODO Change the line below to include a DynamicPolicy (which you will populate with what you learned)
 		this.policy = chooser;
+		this.tdlr = Tdlr.getInstance();
 		
 		width = 60;
 		height = 60;
