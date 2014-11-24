@@ -9,10 +9,10 @@ public class Tdlr {
 	
 	private static Tdlr Instance;
 	
-	private static int policySteps = 20;
-	private static int explorationThreshold = 20;
-	private static float maximumReward = 50;
-	private static float gamma = 0.5f;
+	private static int policySteps = 25;
+	private static int explorationThreshold = 200;
+	private static float maximumReward = 55;
+	private static float gamma = .9f;
 	
 	HashMap<Action, Action[]> sideEffects = new HashMap<>();
 	
@@ -51,8 +51,12 @@ public class Tdlr {
 		return u;
 	}
 
+	private int conta = 0;
 	public void updateUtilities(State current, State previous)
 	{
+		if (previous != null && previous.equals(current))
+			return;
+		
 		if (!U.containsKey(current))
 		{
 			U.put(current, current.reward);
@@ -63,11 +67,7 @@ public class Tdlr {
 			int n = N.get(previous) + 1;
 			N.put(previous, n);
 			
-			float uPrevious = U.get(previous);
-			float uCurrent = U.get(current);
-			float a = alpha(n);
-			
-			float updatedUtility = uPrevious + a * (previous.reward + gamma * uCurrent - f(uPrevious, n));
+			float updatedUtility = U.get(previous) + alpha(n) * (previous.reward + gamma * U.get(current) - f(U.get(previous), n));			
 			U.put(previous, updatedUtility);
 		}		
 	}
@@ -96,7 +96,7 @@ public class Tdlr {
 			}
 		
 		/* Debug information */
-		/*System.out.printf("\n");
+		System.out.printf("\n");
 		for (int y = 0; y < this.tileMap.numRows; y++)
 		{
 			for (int x = 0; x < this.tileMap.numCols; x++)
@@ -117,89 +117,78 @@ public class Tdlr {
 				System.out.printf("%s ", dp.nextMove(s).toString().charAt(0));
 			}
 			System.out.printf("\n");
-		}		*/
+		}		
 				
 		return dp;
 	}
 	
 	private Action Pi(State s)
 	{
-		Action[] actions = availableActions(s);
+		Action[] actions = new Action[]{Action.UP, Action.DOWN, Action.LEFT, Action.RIGHT};
 		
 		float max = Float.NEGATIVE_INFINITY;
 		Action arg = actions.length > 0 ? actions[0] : Action.UP;
 		
 		for (Action a : actions)
-		{
-			float expectedValue = E(s, a);
-			if (expectedValue > max)
+			if (canExecute(s, a))
 			{
-				max = expectedValue;
-				arg = a;
+				float expectedValue = E(s, a);
+				if (expectedValue > max)
+				{
+					max = expectedValue;
+					arg = a;
+				}
 			}
-		}
 		
-		if (s.x == 1 && s.y == 8)
-			return arg;
 		return arg;
 	}
 	
 	private float E(State s, Action a)
 	{
+		State suc = null;
 		float value = 0.f;
-		State next = successor(s, a);
 		
-		if (next != null)
-			value += 0.7f * successor(s, a).reward;
-		
-		for (Action se : sideEffects.get(a))
+		if (canExecute(s, a))
 		{
-			next = successor(s, se);
-			if (next != null)
-				value += 0.15f * next.reward;
+			suc = successor(s, a);
+			value = .7f * suc.reward;
+		}
+		
+		for (Action e : sideEffects.get(a))
+		{
+			if (canExecute(s, e))
+			{
+				suc = successor(s, e);
+				value += .15f * suc.reward;
+			}
 		}
 		
 		return value;
 	}
 	
-	private Action[] availableActions(State s)
+	private boolean canExecute(State s, Action a)
 	{
-	    ArrayList<Action> actions = new ArrayList<>();
-	    Action[] actionList = new Action[]{ Action.UP, Action.DOWN, Action.LEFT, Action.RIGHT };
-	    
-	    if (tileMap.map[s.y][s.x] != 1) // calcula somente se não é um arbusto
-	    {
-	      for (Action a : actionList)
-	      {
-	        if(a == Action.UP && s.y - 1 >= 0 && tileMap.map[s.y - 1][s.x] != 1)
-	          actions.add(Action.UP);
-	        else if(a == Action.DOWN && s.y + 1 < tileMap.numRows && tileMap.map[s.y + 1][s.x] != 1)
-	          actions.add(Action.DOWN);
-	        else if(a == Action.LEFT && s.x - 1 >= 0 && tileMap.map[s.y][s.x - 1] != 1)
-	          actions.add(Action.LEFT);
-	        else if(a == Action.RIGHT && s.x + 1 < tileMap.numCols && tileMap.map[s.y][s.x + 1] != 1)
-	          actions.add(Action.RIGHT);  
-	      }
-	    }
-	    
-	    return actions.toArray(new Action[actions.size()]);
+		if(a == Action.UP && s.y - 1 >= 0 && tileMap.map[s.y - 1][s.x] != 1)
+			return true;
+		else if(a == Action.DOWN && s.y + 1 < tileMap.numRows && tileMap.map[s.y + 1][s.x] != 1)
+			return true;
+		else if(a == Action.LEFT && s.x - 1 >= 0 && tileMap.map[s.y][s.x - 1] != 1)
+			return true;
+		else if(a == Action.RIGHT && s.x + 1 < tileMap.numCols && tileMap.map[s.y][s.x + 1] != 1)
+			return true;
+		
+		return false;
 	}
 	
 	private State successor(State s, Action a)
 	{
+		// este método já assume que a ação 'a' é possível em no estado 's'
 		State suc = new State(s.x, s.y, 0);
 		
-        if(a == Action.UP && s.y - 1 >= 0 && tileMap.map[s.y - 1][s.x] != 1)
-        	suc.y--;
-        else if(a == Action.DOWN && s.y + 1 < tileMap.numRows && tileMap.map[s.y + 1][s.x] != 1)
-        	suc.y++;
-        else if(a == Action.LEFT && s.x - 1 >= 0 && tileMap.map[s.y][s.x - 1] != 1)
-        	suc.x--;
-        else if(a == Action.RIGHT && s.x + 1 < tileMap.numCols && tileMap.map[s.y][s.x + 1] != 1)
-        	suc.x++;
-        else
-        	return null;
-		
+        if (a == Action.UP) suc.y--;
+        else if(a == Action.DOWN) suc.y++;
+        else if(a == Action.LEFT) suc.x--;
+        else if(a == Action.RIGHT) suc.x++;		
 		suc.reward = U.containsKey(suc) ? U.get(suc) : 0;
 		return suc;
 	}

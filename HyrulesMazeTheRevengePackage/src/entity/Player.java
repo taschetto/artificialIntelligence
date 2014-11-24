@@ -22,6 +22,8 @@ public class Player extends MapObject {
 	float totalReward = 0f;
 	State previous = null;
 	
+	private boolean hasRupee = false;
+	
 	Tdlr tdlr;
 	
 	// player stuff
@@ -292,7 +294,13 @@ public class Player extends MapObject {
 				
 		//if over rupee
 		else if(map[old_x][old_y] == 3){
-			reward = 5f;
+			if (!hasRupee) // só pode pegar a rupee uma vez, malandrinho :)
+			{
+				reward = 5f;
+				hasRupee = true;
+			}
+			else
+				reward = -0.1f;
 		}
 				
 		//If we find the chest, reset
