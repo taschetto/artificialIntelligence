@@ -9,8 +9,8 @@ public class Tdlr {
 	
 	private static Tdlr Instance;
 	
-	private static int policySteps = 25;
-	private static int explorationThreshold = 200;
+	private static int policySteps = 1;
+	private static int explorationThreshold = 20;
 	private static float maximumReward = 55;
 	private static float gamma = .9f;
 	
@@ -51,7 +51,6 @@ public class Tdlr {
 		return u;
 	}
 
-	private int conta = 0;
 	public void updateUtilities(State current, State previous)
 	{
 		if (previous != null && previous.equals(current))
@@ -62,7 +61,8 @@ public class Tdlr {
 			U.put(current, current.reward);
 			N.put(current, 0);
 		}
-		else if (previous != null)
+		
+		if (previous != null)
 		{			
 			int n = N.get(previous) + 1;
 			N.put(previous, n);
@@ -182,13 +182,13 @@ public class Tdlr {
 	
 	private State successor(State s, Action a)
 	{
-		// este mÈtodo j· assume que a aÁ„o 'a' È possÌvel em no estado 's'
+		// este m√©todo j√° assume que a a√ß√£o 'a' √© poss√≠vel em no estado 's'
 		State suc = new State(s.x, s.y, 0);
 		
         if (a == Action.UP) suc.y--;
         else if(a == Action.DOWN) suc.y++;
         else if(a == Action.LEFT) suc.x--;
-        else if(a == Action.RIGHT) suc.x++;		
+        else if(a == Action.RIGHT) suc.x++;
 		suc.reward = U.containsKey(suc) ? U.get(suc) : 0;
 		return suc;
 	}
