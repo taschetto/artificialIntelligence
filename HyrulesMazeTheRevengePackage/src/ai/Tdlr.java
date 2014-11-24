@@ -9,6 +9,9 @@ public class Tdlr {
 	
 	private static Tdlr Instance;
 	
+	private static int explorationThreshold = 0;
+	private static float maximumReward = 50;
+	
 	TileMap tileMap = null;
 	
 	private HashMap<State, Integer> N = new HashMap<>();
@@ -36,11 +39,6 @@ public class Tdlr {
 	{
 		return 1.f / (n + 1); // deixa divByZero estourar
 	}
-	
-	private float f(float u, float n)
-	{
-		return u;
-	}
 
 	public void updateUtilities(State current, State previous)
 	{
@@ -60,7 +58,7 @@ public class Tdlr {
 			float uCurrent = U.get(current);
 			float a = alpha(n);
 			
-			float updatedUtility = uPrevious + a * (previous.reward + gamma * uCurrent - f(uPrevious, n));
+			float updatedUtility = uPrevious + a * (previous.reward + gamma * uCurrent - uPrevious);
 			U.put(previous, updatedUtility);
 		}		
 	}
@@ -76,18 +74,19 @@ public class Tdlr {
 				State s = new State(row, col, 0);
 				dp.setAction(s, Pi(s));
 			}
-		/*****************/
+		
+		/* Debug information */
 		for (int row = 0; row < this.tileMap.numRows; row++)
 		{
 			for (int col = 0; col < this.tileMap.numCols; col++)
 			{
 				State s = new State(row, col, 0);
-				System.out.printf("%5.2f ", U.containsKey(s) ? U.get(s) : 0.f);
+				System.out.printf("%+5.2f ", U.containsKey(s) ? U.get(s) : 0.f);
 				
 			}
 			System.out.printf("\n");
 		}
-		
+		/*
 		for (int row = 0; row < this.tileMap.numRows; row++)
 		{
 			for (int col = 0; col < this.tileMap.numCols; col++)
@@ -97,7 +96,7 @@ public class Tdlr {
 				
 			}
 			System.out.printf("\n");
-		}
+		}*/
 		
 		for (int row = 0; row < this.tileMap.numRows; row++)
 		{
@@ -108,7 +107,7 @@ public class Tdlr {
 				
 			}
 			System.out.printf("\n");
-		}		
+		}	
 		
 		return dp;
 	}
