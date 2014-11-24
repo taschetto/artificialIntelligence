@@ -10,8 +10,9 @@ public class Tdlr {
 	private static Tdlr Instance;
 	
 	private static int policySteps = 20;
-	private static int explorationThreshold = 0;
+	private static int explorationThreshold = 20;
 	private static float maximumReward = 50;
+	private static float gamma = 0.5f;
 	
 	HashMap<Action, Action[]> sideEffects = new HashMap<>();
 	
@@ -41,6 +42,14 @@ public class Tdlr {
 	{
 		return 1.f / (n + 1); // deixa divByZero estourar
 	}
+	
+	private float f(float u, int n)
+	{
+		if (n < explorationThreshold)
+			return maximumReward;
+		
+		return u;
+	}
 
 	public void updateUtilities(State current, State previous)
 	{
@@ -50,9 +59,7 @@ public class Tdlr {
 			N.put(current, 0);
 		}
 		else if (previous != null)
-		{
-			float gamma = 1.f;
-			
+		{			
 			int n = N.get(previous) + 1;
 			N.put(previous, n);
 			
@@ -60,7 +67,7 @@ public class Tdlr {
 			float uCurrent = U.get(current);
 			float a = alpha(n);
 			
-			float updatedUtility = uPrevious + a * (previous.reward + gamma * uCurrent - uPrevious);
+			float updatedUtility = uPrevious + a * (previous.reward + gamma * uCurrent - f(uPrevious, n));
 			U.put(previous, updatedUtility);
 		}		
 	}
