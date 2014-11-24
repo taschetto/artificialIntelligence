@@ -294,7 +294,7 @@ public class Player extends MapObject {
 				
 		//if over rupee
 		else if(map[old_x][old_y] == 3){
-			if (!hasRupee) // só pode pegar a rupee uma vez, malandrinho :)
+			if (!hasRupee) // sï¿½ pode pegar a rupee uma vez, malandrinho :)
 			{
 				reward = 5f;
 				hasRupee = true;
@@ -324,7 +324,9 @@ public class Player extends MapObject {
 		//TODO This is where the learning update should happen
 		tdlr.updateUtilities(current, previous);
 		this.policy = tdlr.updatePolicy(tileMap, this.policy);
-		previous = current;		
+		previous = current;
+		
+		//System.out.println(randomOutcome);
 		
 		return randomOutcome;
 	}
