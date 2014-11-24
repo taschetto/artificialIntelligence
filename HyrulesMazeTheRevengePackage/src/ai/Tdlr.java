@@ -9,15 +9,17 @@ public class Tdlr {
 	
 	private static Tdlr Instance;
 	
+	private static int policySteps = 20;
 	private static int explorationThreshold = 0;
 	private static float maximumReward = 50;
+	
+	HashMap<Action, Action[]> sideEffects = new HashMap<>();
 	
 	TileMap tileMap = null;
 	
 	private HashMap<State, Integer> N = new HashMap<>();
 	private HashMap<State, Float> U = new HashMap<>();
-	
-	HashMap<Action, Action[]> sideEffects = new HashMap<>();
+	private int steps = 0;
 	
 	public static Tdlr getInstance()
 	{
@@ -63,7 +65,18 @@ public class Tdlr {
 		}		
 	}
 	
-	public DynamicPolicy recalculatePolicy(TileMap tileMap)
+	public IPolicy updatePolicy(TileMap tileMap, IPolicy currentPolicy)
+	{
+		steps++;
+		if (steps % policySteps == 0)
+		{
+			steps = 0;
+			return recalculatePolicy(tileMap);
+		}
+		return currentPolicy;
+	}	
+	
+	private DynamicPolicy recalculatePolicy(TileMap tileMap)
 	{
 		this.tileMap = tileMap;
 		DynamicPolicy dp = new DynamicPolicy();
@@ -73,7 +86,10 @@ public class Tdlr {
 			{
 				State s = new State(row, col, 0);
 				dp.setAction(s, Pi(s));
+				System.out.printf("Atualizei Pi(%d, %d) = %s\n", row, col,Pi(s).toString().charAt(0));
 			}
+		
+		System.out.printf("\n");		
 		
 		/* Debug information */
 		for (int row = 0; row < this.tileMap.numRows; row++)
@@ -81,7 +97,7 @@ public class Tdlr {
 			for (int col = 0; col < this.tileMap.numCols; col++)
 			{
 				State s = new State(row, col, 0);
-				System.out.printf("%+5.2f ", U.containsKey(s) ? U.get(s) : 0.f);
+				System.out.printf("%0+3.1f [%s] ", U.containsKey(s) ? U.get(s) : 0.f, dp.nextMove(s).toString().charAt(0));
 				
 			}
 			System.out.printf("\n");
@@ -97,18 +113,7 @@ public class Tdlr {
 			}
 			System.out.printf("\n");
 		}*/
-		
-		for (int row = 0; row < this.tileMap.numRows; row++)
-		{
-			for (int col = 0; col < this.tileMap.numCols; col++)
-			{
-				State s = new State(row, col, 0);				
-				System.out.printf("%s ", dp.nextMove(s).toString().charAt(0));
 				
-			}
-			System.out.printf("\n");
-		}	
-		
 		return dp;
 	}
 	
@@ -144,14 +149,25 @@ public class Tdlr {
 	
 	private Action[] availableActions(State s)
 	{
-		ArrayList<Action> actions = new ArrayList<>();
-		
-		if (s.y > 0) actions.add(Action.UP);
-		if (s.y < tileMap.numRows - 1) actions.add(Action.DOWN);
-		if (s.x > 0) actions.add(Action.LEFT);
-		if (s.x < tileMap.numCols - 1) actions.add(Action.RIGHT);
-		
-		return actions.toArray(new Action[actions.size()]);
+	    ArrayList<Action> actions = new ArrayList<>();
+	    Action[] actionList = new Action[]{ Action.UP, Action.DOWN, Action.LEFT, Action.RIGHT };
+	    
+	    if (tileMap.map[s.y][s.x] != 1) // calcula somente se não é um arbusto
+	    {
+	      for (Action a : actionList)
+	      {
+	        if(a == Action.UP && s.y - 1 >= 0 && tileMap.map[s.y - 1][s.x] != 1)
+	          actions.add(Action.UP);
+	        else if(a == Action.DOWN && s.y + 1 < tileMap.numRows && tileMap.map[s.y + 1][s.x] != 1)
+	          actions.add(Action.DOWN);
+	        else if(a == Action.LEFT && s.x - 1 >= 0 && tileMap.map[s.y][s.x - 1] != 1)
+	          actions.add(Action.LEFT);
+	        else if(a == Action.RIGHT && s.x + 1 < tileMap.numCols && tileMap.map[s.y][s.x + 1] != 1)
+	          actions.add(Action.RIGHT);  
+	      }
+	    }
+	    
+	    return actions.toArray(new Action[actions.size()]);
 	}
 	
 	private State successor(State s, Action a)

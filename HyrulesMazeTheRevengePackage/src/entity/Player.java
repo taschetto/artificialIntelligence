@@ -302,8 +302,6 @@ public class Player extends MapObject {
 			System.out.println("Total reward: " + totalReward);
 			Util.gsm.init();
 			totalReward = 0;
-			System.out.println("RECALCULATE POLICY");
-			this.policy = tdlr.recalculatePolicy(tileMap);
 		}
 		
 		totalReward += reward;
@@ -317,6 +315,7 @@ public class Player extends MapObject {
 		
 		//TODO This is where the learning update should happen
 		tdlr.updateUtilities(current, previous);
+		this.policy = tdlr.updatePolicy(tileMap, this.policy);
 		previous = current;		
 		
 		return randomOutcome;
