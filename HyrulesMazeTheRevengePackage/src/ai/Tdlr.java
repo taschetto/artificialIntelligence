@@ -74,55 +74,53 @@ public class Tdlr {
 			return recalculatePolicy(tileMap);
 		}
 		return currentPolicy;
-	}	
+	}
 	
 	private DynamicPolicy recalculatePolicy(TileMap tileMap)
 	{
 		this.tileMap = tileMap;
 		DynamicPolicy dp = new DynamicPolicy();
 		
-		for (int row = 0; row < this.tileMap.numRows; row++)
-			for (int col = 0; col < this.tileMap.numCols; col++)
+		for (int y = 0; y < this.tileMap.numRows; y++)
+			for (int x = 0; x < this.tileMap.numCols; x++)
 			{
-				State s = new State(row, col, 0);
+				State s = new State(x, y, 0);
 				dp.setAction(s, Pi(s));
-				System.out.printf("Atualizei Pi(%d, %d) = %s\n", row, col,Pi(s).toString().charAt(0));
 			}
 		
-		System.out.printf("\n");		
-		
 		/* Debug information */
-		for (int row = 0; row < this.tileMap.numRows; row++)
+		/*System.out.printf("\n");
+		for (int y = 0; y < this.tileMap.numRows; y++)
 		{
-			for (int col = 0; col < this.tileMap.numCols; col++)
+			for (int x = 0; x < this.tileMap.numCols; x++)
 			{
-				State s = new State(row, col, 0);
-				System.out.printf("%0+3.1f [%s] ", U.containsKey(s) ? U.get(s) : 0.f, dp.nextMove(s).toString().charAt(0));
-				
+				State s = new State(x, y, 0);
+				System.out.printf("%+02.2f ", U.containsKey(s) ? U.get(s) : 0.f);
+				//System.out.printf("%+02.2f [%s] ", U.containsKey(s) ? U.get(s) : 0.f, dp.nextMove(s).toString().charAt(0));
 			}
 			System.out.printf("\n");
 		}
-		/*
-		for (int row = 0; row < this.tileMap.numRows; row++)
+		
+		System.out.printf("\n");
+		for (int y = 0; y < this.tileMap.numRows; y++)
 		{
-			for (int col = 0; col < this.tileMap.numCols; col++)
+			for (int x = 0; x < this.tileMap.numCols; x++)
 			{
-				State s = new State(row, col, 0);
-				System.out.printf("%3d ", U.containsKey(s) ? N.get(s) : 0);
-				
+				State s = new State(x, y, 0);
+				System.out.printf("%s ", dp.nextMove(s).toString().charAt(0));
 			}
 			System.out.printf("\n");
-		}*/
+		}		*/
 				
 		return dp;
 	}
 	
 	private Action Pi(State s)
 	{
-		float max = Float.NEGATIVE_INFINITY;
-		Action arg = Action.NONE;
-		
 		Action[] actions = availableActions(s);
+		
+		float max = Float.NEGATIVE_INFINITY;
+		Action arg = actions.length > 0 ? actions[0] : Action.UP;
 		
 		for (Action a : actions)
 		{
@@ -134,15 +132,25 @@ public class Tdlr {
 			}
 		}
 		
+		if (s.x == 1 && s.y == 8)
+			return arg;
 		return arg;
 	}
 	
 	private float E(State s, Action a)
 	{
-		float value = 0.7f * successor(s, a).reward;
+		float value = 0.f;
+		State next = successor(s, a);
+		
+		if (next != null)
+			value += 0.7f * successor(s, a).reward;
 		
 		for (Action se : sideEffects.get(a))
-			value += 0.15f * successor(s, se).reward;
+		{
+			next = successor(s, se);
+			if (next != null)
+				value += 0.15f * next.reward;
+		}
 		
 		return value;
 	}
@@ -172,12 +180,18 @@ public class Tdlr {
 	
 	private State successor(State s, Action a)
 	{
-		State suc = new State(s.y, s.x, 0);
+		State suc = new State(s.x, s.y, 0);
 		
-		if (a == Action.UP) suc.y--;
-		else if (a == Action.DOWN) suc.y++;
-		else if (a == Action.LEFT) suc.x--;
-		else if (a == Action.RIGHT) suc.x++;
+        if(a == Action.UP && s.y - 1 >= 0 && tileMap.map[s.y - 1][s.x] != 1)
+        	suc.y--;
+        else if(a == Action.DOWN && s.y + 1 < tileMap.numRows && tileMap.map[s.y + 1][s.x] != 1)
+        	suc.y++;
+        else if(a == Action.LEFT && s.x - 1 >= 0 && tileMap.map[s.y][s.x - 1] != 1)
+        	suc.x--;
+        else if(a == Action.RIGHT && s.x + 1 < tileMap.numCols && tileMap.map[s.y][s.x + 1] != 1)
+        	suc.x++;
+        else
+        	return null;
 		
 		suc.reward = U.containsKey(suc) ? U.get(suc) : 0;
 		return suc;

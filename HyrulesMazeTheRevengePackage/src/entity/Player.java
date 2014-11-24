@@ -309,7 +309,7 @@ public class Player extends MapObject {
 		int currRow = (int)y / tileSize;
 		int currCol = (int)x / tileSize;	
 		
-		State current = new State(currRow, currCol, reward);
+		State current = new State(currCol, currRow, reward);
 		Action next = policy.nextMove(current);
 		Action randomOutcome = tf.successor(current, next);
 		
