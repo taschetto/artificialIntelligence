@@ -171,7 +171,16 @@ as funções do algoritmo. O algoritmo pode ser configurado pelos seguintes par�
 
 \section{Conclusão}
 
-Uma das maiores dificuldades encontradas para o desenvolvimento do algoritmo foi a verificação de se o mesmo estava correto ou não, já que o mesmo
-demora para convergir.
+Durante o desenvolvimento da implementação do algoritmo de TD Learning foram encontradas algumas dificuldades para que fosse possível fazer o algoritmo
+executar da maneira correta. Dentre essas dificuldades estava em que o algoritmo em certo ponto fazia dois pontos convergirem um em direção contraria
+ao outro, fazendo com que o link ficasse trancado em um mesmo ponto no mapa. Isto acontecia porque estes dois estados dentro do mapa tinhas melhores
+utilidades que seus vizinhos fazendo que com o link não saisse para outros estados
+
+Outra dificuldade que tivemos foi de que, nas duas primeira vezes que era executado o algoritmo era encontrado e calculado os caminhos para achar
+o baú e achar a rupp, contudo após achar esse caminhos ao continuar executando o algoritmo para calcular as utilidades dos outros caminhos possíveis,
+o algoritmo não efetua a política ótima que seria de ir pegar a rupp antes de ir para o báu, aparentemente ele efetua o caminho que fez para o baú para
+quase chegar la e voltar e buscar a rupp e voltar para o báu, fazendo com que o custo seja muito maior e não valha a pena fazer o caminho escolido por
+ele. 
+
 
 \end{document}
