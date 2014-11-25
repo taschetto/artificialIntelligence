@@ -10,7 +10,7 @@ public class Tdlr {
 	private static Tdlr Instance;
 	
 	private static int policySteps = 1;
-	private static int explorationThreshold = 25;
+	private static int explorationThreshold = 20;
 	private static float maximumReward = 55;
 	private static float gamma = .9f;
  	
@@ -59,7 +59,7 @@ public class Tdlr {
 			N.put(current, 0);
 		}
 		
-		if (previous != null && !previous.equals(current))
+		if (previous != null)
 		{			
 			int n = N.get(previous) + 1;
 			N.put(previous, n);
@@ -114,13 +114,13 @@ public class Tdlr {
 				Action a = dp.nextMove(s);
 				
 				if (a == Action.UP)
-					System.out.print("↑");
+					System.out.print(Character.toString((char)0x2191) + " ");
 				else if (a == Action.DOWN)
-					System.out.print("↓");
+					System.out.print(Character.toString((char)0x2193) + " ");
 				else if (a == Action.LEFT)
-					System.out.print("←");
+					System.out.print(Character.toString((char)0x2190) + " ");
 				else if (a == Action.RIGHT)
-					System.out.print("→");
+					System.out.print(Character.toString((char)0x2192) + " ");
 			}
 			System.out.printf("\n");
 		}		

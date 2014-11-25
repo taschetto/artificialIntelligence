@@ -6,6 +6,12 @@
 \usepackage{helvet}
 \usepackage{courier}
 \usepackage[utf8]{inputenc}
+\usepackage{fancyvrb}
+\usepackage{listings}
+\lstset {
+    mathescape,
+    frame=none
+}
 \frenchspacing
 \setlength{\pdfpagewidth}{8.5in}
 \setlength{\pdfpageheight}{11in}
@@ -24,34 +30,95 @@ Porto Alegre, Rio Grande do Sul 90619-900}
 
 \maketitle
 \begin{abstract}
-Este relatório visa apresentar o paso a paso utilizado pela equipe para o desenvolvimento o algoritmo de aprendizagem por
-reforço, desde a concepção do mesmo até a implementalção.
+Este artigo tem por objetivo apresentar uma aplicação de um algoritmo de Aprenziado por Reforço
+no contexto de um labirinto onde o personagem Link deve encontrar um baú através de um caminho
+de forma a maximizar a recompensa final obtida. Além dos argumentos para a escolha do algoritmo,
+são apresentados detalhes da implementação e apresentação e análise dos resultados obtidos.
 \end{abstract}
 
 \section{Introdução}
 
-Tendo em vista a necessidade de desenvolver um algoritmo de aprendizagem por reforço, o grupo decidiu por fazer a implementação
-do TD Learning, pois o mesmo é mais preciso apesar de demorar mais tempo para convergir para o resultado final, já que ele se baseia
-em ajustar as previsões para que seja mais perto possível do resultado esperado.
+Nosso agente, Link, tem por objetivo caminhar por um labirinto e chegar ao final (marcado pela
+presença de um baú) maximizando a recompensa obtida. A recompensa pode ser representada da
+seguinte forma:
+
+\begin{itemize}
+\item +50 ao encontrar o baú;
+\item +5 ao encontrar uma \textit{rupee}\footnote{Uma espécie de pedra preciosa.};
+\item -0.1 ao caminhar ou dar de cada com uma parede.
+\end{itemize}
+
+Além disso, ao tentar mover-se em uma direção X, Link pode...
+
+\begin{itemize}
+\item avançar na direção X, com 70\% de chances que isso ocorra;
+\item avançar em uma direção perpendicular à X, com 30\% de chances que isso ocorra - sendo 15\%
+de chance para cada lado.
+\end{itemize}
+
+É neste contexto que desejamos aplicar um algoritmo de Aprendizado por Reforço. Através de
+sucessivas experiências - ou seja, andar e conhecer o labirinto e suas caracterísricas - Link
+deverá ser capaz de realizar aprimoraramentos o resultado obtido por seu caminhamento - ou seja,
+aprender com a sua própria experiência.
+
+\section{Escolha do Algoritmo}
+
+Dentre as opções possíveis de algoritmos de Aprendizado por Reforço optamos pelo
+\textit{Active TD Learning}\footnote{\textit{Active Temporal Difference Learning}, ou Aprendizado
+Ativo por Diferença Temporal.}. Os principais fatores que levaram à escolha forama maior
+simplicidade de compreensão e implementação, além de apresentar uma maior precisão ao ser
+comparado com algoritmos similares, já que se baseia em ajustar as utilidades dos estados para
+que o mais próximo possível do resultado esperado (após a convergência).
 
 \section{Descrição do Algoritmo}
 
-O TD Learning tem como funcionamento, utilizando uma política inicial “randômica”, chegar até o objetivo, ou seja, onde a recompensa é
-maior. Ao chegar neste objetivo o algoritmo deve remontar o caminho que ele fez, neste processo o mesmo calcula as utilidades de cada estado
-que ele passou comparando com o estado anterior. Após efetuar esse primeiro caminho o mesmo se utiliza dos estados e utilidades já computados
-e verifica outras opções vendo a probabilidade de ir para outro estado, sendo assim atualizando a política que ele utilizou no início para uma
-regra mais direcionada para o objetivo que o mesmo deseja obter. Após atualizar a política, o algoritmo executa novamente o caminho feito na
-nova regra, calculando as novas utilidades dos estados. Isto será efetuado até que os valores convirjam para o mesmo e ele comece a seguir
-sempre a mesma política.
+O \textit{ATDL} pode ser dividido em duas grandes partes:
 
-No caso do algoritmo implementado, em um primeiro momento ele executa uma política randômica até chegar no objetivo. Chegando lá o método
-updateUtilities é chamado para que seja calculado os valores das utilidades dos estados que foram percorridos. Ao finalizar a atualização das
-políticas é feita o recálculo da política através do método recalculatePolicy. O algoritmo vai ficar neste processo de atualização de utilidades
-e recálculo de politicas até que os valores de utilidades dos estados convirjam. Para realizar esse processo foram utilizados alguns métodos
-auxiliares. Dentre eles esta o avaibleActions que retorna um conjunto de ações possíveis a partir de um determinado estado. O método Pi retorna
-a melhor ação possível para um determinado estado selecionado a maior recompensa obtida de todos os estados que é obtido através do método E. E
-por fim existe o método sucessor que faz com que seja possível andar pelos estados que a política está selecionando como melhor estado até
-aquele momento.
+\begin{description}
+\item[Atualização das Utilidades] Etapa na qual o agente transita no espaço de estados,
+seguindo uma política $\pi$, e é feito o recálculo das utilidades dos estados.
+\item[Atualização da Política] Etapa na qual é criada uma nova política baseada nos
+novos valores de utilidades.
+\end{description}
+
+\subsection{Atualização das Utilidades}
+
+Esta etapa faz uso de alguns artefatos. São eles:
+
+\begin{description}
+\item[$\pi$] Uma política inicial qualquer.
+\item[$U(s)$] Utilidade para o estado $s$ (inicialmente $0$).
+\item[$N(s)$] Número de visitas ao estado $s$.
+\item[$\alpha$] Taxa de aprendizado (normalmente $1/(N(s)+1)$).
+\end{description}
+
+O algoritmo em si é descrito pelo seguinte pseudo-código:
+
+\begin{lstlisting}
+$if\ s\prime\ is\ new\ then\ U[s\prime]\ \leftarrow\ r\prime$
+$if\ s\ is\ not\ null\ then$
+$\ \ \ \ increment\ N_s[s]$
+$\ \ \ \ U[s]\ \leftarrow\ U[s]\ +\ \alpha (N_s[s])(r\ +\ \gamma U[s]\ -\ U[s])$
+\end{lstlisting}
+
+Em linhas gerais, o algoritmo transita entre os estados utilizando a política $\pi$. Em cada
+transição de estados, i. e. $s \rightarrow s\prime$, o algoritmo é executado. Descritivamente,
+o algoritmo verifica se o estado atingido nunca havia sido atingido antes - em caso positivo,
+a utilidade do estado é a própria recompensa imediata do estado. E, caso o estado anterior seja
+válido (ou seja, não nulo), é feito o incremento no contador de visitas daquele estado e
+atualizada a utilidade do mesmo seguindo a fórmula do algoritmo.
+
+\subsection{Atualização da Política}
+
+Para tornar a atualização das utilidades dos estados algo útil deve ser gerada uma nova política
+com base nestes valores. Uma política compreende um mapeamento $\pi(s) \rightarrow Action$, ou
+seja, a política define uma ação para cada estado.
+
+O \textit{ATDL} define que, de tempos em tempos, a política deve ser recalculada. Para isto, é
+necessário realizar o processamento de um MDP\footnote{\textit{Markov Decision Process}, ou
+Processo de Decisão de Markov.} A nova política para um estado $s$ se dá por:
+
+\[\pi(s) = arg\ max_a \sum\limits_{s\prime} P(s\prime|s,a) * U(s\prime)\]
 
 \section{Avaliação do Algoritmo}
 
