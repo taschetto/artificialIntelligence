@@ -108,6 +108,11 @@ a utilidade do estado é a própria recompensa imediata do estado. E, caso o est
 válido (ou seja, não nulo), é feito o incremento no contador de visitas daquele estado e
 atualizada a utilidade do mesmo seguindo a fórmula do algoritmo.
 
+Entretanto, para tornar o algoritmo mais flexível e fazer com que ele busque por novos caminhos
+(que podem ser benéficos), é adicionada uma função de exploração:
+
+\[U[s]\ \leftarrow\ U[s]\ +\ \alpha (N_s[s])(r\ +\ \gamma U[s]\ -\ f(U[s],\ N[s]))\]
+
 \subsection{Atualização da Política}
 
 Para tornar a atualização das utilidades dos estados algo útil deve ser gerada uma nova política
@@ -119,6 +124,48 @@ necessário realizar o processamento de um MDP\footnote{\textit{Markov Decision 
 Processo de Decisão de Markov.} A nova política para um estado $s$ se dá por:
 
 \[\pi(s) = arg\ max_a \sum\limits_{s\prime} P(s\prime|s,a) * U(s\prime)\]
+
+Ou seja, a política do estado $s$ é a ação que maximiza a utilidade esperada. A função $P(s\prime|s,a)$
+traduz, na fórmula, as probabilidades descritas no início deste relatório (70\% + 15\% + 15\%).
+
+\section{Descrição da Implementação}
+
+Em nossa implementação criamos uma classe \texttt{Tdlr} para servir como um \textit{façade} para
+as funções do algoritmo. O algoritmo pode ser configurado pelos seguintes parâmetros:
+
+\begin{description}
+  \item[$float\ gamma\ =\ .9f;$] \hfill \\
+  Fator utilizado para acelerar a convergência.
+  \item[$int\ policySteps\ =\ 1;$] \hfill \\
+  De quantos em quantos passos a política será recalculada.
+  \item[$int\ explorationThreshold\ =\ 20;$] \hfill \\
+  O limiar de exploração utilizado pela função de exploração.
+  \item[$float\ maximumReward\ =\ 55;$] \hfill \\
+  A recompensa máxima, também utilizada pela função de exploração.
+
+\end{description}
+
+\subsection{Estruturas de Dados}
+
+\begin{description}
+\item[$\pi$] \hfill \\ $HashMap$ encapsulado pela classe $DynamicPolicy$.
+\item[$U(s)$] \hfill \\ $HashMap<State, Float> U$.
+\item[$N(s)$] \hfill \\ $HashMap<State, Integer> N$.
+\item[$\alpha$] \hfill \\ Método $Tdlr\#alpha(int n)$.
+\end{description}
+
+\subsection{Interface Pública}
+
+\begin{description}
+\item[$Tdlr\#updateUtilities(s\prime,\ s)$] \hfill\\
+  Método que executa a parte I do algoritmo, atualizando as utilidades dos estados recebidos
+  nos parâmetros.
+\item[$Tdlr\#updatePolicy(tileMap, currentPolicy)$] \hfill\\
+  Método que atualiza a política. O parâmetro $tileMap$ serve é utilizado para saber o tamanho do
+  labirinto. O parâmetro $currentPolicy$ contém a política atual. Este método é chamado a cada
+  passo dado por Link. Porém, internamente, o método utiliza um contador parametrizável para
+  realizar o cálculo a cada $policySteps$ passos.
+\end{description}
 
 \section{Avaliação do Algoritmo}
 
