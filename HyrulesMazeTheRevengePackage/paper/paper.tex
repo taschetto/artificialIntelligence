@@ -116,9 +116,9 @@ Entretanto, para tornar o algoritmo mais flexível e fazer com que ele busque po
 \[U[s]\ \leftarrow\ U[s]\ +\ \alpha (N_s[s])(r\ +\ \gamma U[s]\ -\ f(U[s],\ N[s]))\]
 
 Sem a função de exploração a utilidade leva a recompensas dos estados colaboram majoritariamente
-para a utilidade do mesmo. Isto faz com que o algoritmo fique muito \"preso\" aos números e acabe
+para a utilidade do mesmo. Isto faz com que o algoritmo fique muito ``preso'' aos números e acabe
 não explorando o espaço de estados suficientemente - por exemplo, por outras recompensas positivas.
-Esta diferença entre \"exploitation" (seguir as utilidades calculadas) e \"explorarion\" (ser um
+Esta diferença entre ``exploitation'' (seguir as utilidades calculadas) e ``exploration'' (ser um
 pouco aventureiro para, quem sabe, encontrar algo de positivo).
 
 \subsection{Atualização da Política}
@@ -194,27 +194,46 @@ professor para que as coisas funcionassem de forma mais satisfatória. Foram ela
   \end{itemize}
 \end{description}
 
-\section{Avaliação do Algoritmo}
+\section{Resultados}
 
-\begin{figure}[h]
+\begin{figure}[ht]
 \includegraphics{trivial}\\
+\centering
+\end{figure}
+
+Para o mapa $trivial$ não foi possível observar o efeito do aprendizado.
+
+\begin{figure}[ht]
 \includegraphics{empty}\\
+\centering
+\end{figure}
+
+Para o mapa $empty$ é possível observar que os resultados começam a ficar uniformes após cerca de 25 execuções e à partir daí entram em uma leve crescente.
+
+\begin{figure}[ht]
 \includegraphics{easy}
 \centering
 \end{figure}
 
+Para o mapa $easy$ é possível observar que os resultados começam a ficar uniformes após cerca de 10 execuções e à partir daí entram em uma leve crescente.
+
+\subsection{Bugs e Fracassos}
+
+Infelizmente, nosso algoritmo apresentou falhas que não conseguimos identificar mesmo após muito esforço e depuração. Em diversas simulações houve casos
+em que Link ficava ``preso'' em um ciclo infinito entre dois estados ($UP \rightarrow DOWN \rightarrow UP \rightarrow \ldots$). Verificamos os valores de
+utilidades e concluímos que a política estava sendo calculada corretamente, pois as ações indicavam o caminho mais vantajoso naquela redondeza e o limiar
+de exploração já havia chegado ao fim. Apesar de muito quebrar a cabeça, não conseguimos bolar um artifício para evitar o surgimento deste problema/bug.
+
+Este fato foi muito mais acentuado no mapa $medium$. Após 2 ou 3 execuções completas, o algoritmo invariavelmente ficava preso em um caso como este. Por
+isto a ausência de resultados com este mapa.
+
 \section{Conclusão}
 
-Durante o desenvolvimento da implementação do algoritmo de TD Learning foram encontradas algumas dificuldades para que fosse possível fazer o algoritmo
-executar da maneira correta. Dentre essas dificuldades estava em que o algoritmo em certo ponto fazia dois pontos convergirem um em direção contraria
-ao outro, fazendo com que o link ficasse trancado em um mesmo ponto no mapa. Isto acontecia porque estes dois estados dentro do mapa tinhas melhores
-utilidades que seus vizinhos fazendo que com o link não saisse para outros estados
+Durante a da implementação do algoritmo foram encontradas diversas dificuldades para que o algoritmo executasse da maneira correta. Dentre essas dificuldades
+podemos listar alguns pequenos bugs no código fornecido que tomaram bastante tempo para descobrí-los; a dificuldade monstruosa de debugar o código, já que
+tendo dados em $hashes$ diferentes que são atualizados dinamicamente várias vezes seguidas é muito difícil de acompanhar; a falta de exemplos práticos disponíveis
+na literatura e na web (embora os algoritmos estivessem bem documentados na bibliografia da disciplina).
 
-Outra dificuldade que tivemos foi de que, nas duas primeira vezes que era executado o algoritmo era encontrado e calculado os caminhos para achar
-o baú e achar a rupp, contudo após achar esse caminhos ao continuar executando o algoritmo para calcular as utilidades dos outros caminhos possíveis,
-o algoritmo não efetua a política ótima que seria de ir pegar a rupp antes de ir para o báu, aparentemente ele efetua o caminho que fez para o baú para
-quase chegar la e voltar e buscar a rupp e voltar para o báu, fazendo com que o custo seja muito maior e não valha a pena fazer o caminho escolido por
-ele. 
-
-
+Entretanto, a realização do trabalho foi uma ótima forma de experimentar na prática algoritmos de Aprendizado de Máquina e a resolução de MDPs. Estas duas
+ferramentas associadas podem realizar façanhas incríveis no mundo da Inteligência Artificial e em diversos outros campos da ciência e tecnologia.
 \end{document}
