@@ -294,7 +294,7 @@ public class Player extends MapObject {
 				
 		//if over rupee
 		else if(map[old_x][old_y] == 3){
-			if (!hasRupee) // s� pode pegar a rupee uma vez, malandrinho :)
+			if (!hasRupee) // so pode pegar a rupee uma vez, malandrinho :)
 			{
 				reward = 5f;
 				hasRupee = true;
@@ -307,7 +307,7 @@ public class Player extends MapObject {
 		else{
 			reward = 50f;
 			totalReward += reward;
-			System.out.println("Total reward: " + totalReward);
+			System.out.println(totalReward);
 			Util.gsm.init();
 			totalReward = 0;
 		}

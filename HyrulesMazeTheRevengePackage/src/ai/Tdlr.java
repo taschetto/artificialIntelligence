@@ -93,7 +93,7 @@ public class Tdlr {
 			}
 		
 		/* Debug information */
-		System.out.printf("\n");
+		/*System.out.printf("\n");
 		for (int y = 0; y < this.tileMap.numRows; y++)
 		{
 			for (int x = 0; x < this.tileMap.numCols; x++)
@@ -123,7 +123,7 @@ public class Tdlr {
 					System.out.print(Character.toString((char)0x2192) + " ");
 			}
 			System.out.printf("\n");
-		}		
+		}		*/
 				
 		return dp;
 	}

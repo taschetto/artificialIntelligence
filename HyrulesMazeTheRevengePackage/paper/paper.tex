@@ -12,6 +12,8 @@
     mathescape,
     frame=none
 }
+\usepackage{graphicx}
+\graphicspath{ {img/} }
 \frenchspacing
 \setlength{\pdfpagewidth}{8.5in}
 \setlength{\pdfpageheight}{11in}
@@ -72,7 +74,7 @@ que o mais próximo possível do resultado esperado (após a convergência).
 
 \section{Descrição do Algoritmo}
 
-O \textit{ATDL} pode ser dividido em duas grandes partes:
+O \textit{ATDLR} pode ser dividido em duas grandes partes:
 
 \begin{description}
 \item[Atualização das Utilidades] Etapa na qual o agente transita no espaço de estados,
@@ -113,13 +115,19 @@ Entretanto, para tornar o algoritmo mais flexível e fazer com que ele busque po
 
 \[U[s]\ \leftarrow\ U[s]\ +\ \alpha (N_s[s])(r\ +\ \gamma U[s]\ -\ f(U[s],\ N[s]))\]
 
+Sem a função de exploração a utilidade leva a recompensas dos estados colaboram majoritariamente
+para a utilidade do mesmo. Isto faz com que o algoritmo fique muito \"preso\" aos números e acabe
+não explorando o espaço de estados suficientemente - por exemplo, por outras recompensas positivas.
+Esta diferença entre \"exploitation" (seguir as utilidades calculadas) e \"explorarion\" (ser um
+pouco aventureiro para, quem sabe, encontrar algo de positivo).
+
 \subsection{Atualização da Política}
 
 Para tornar a atualização das utilidades dos estados algo útil deve ser gerada uma nova política
 com base nestes valores. Uma política compreende um mapeamento $\pi(s) \rightarrow Action$, ou
 seja, a política define uma ação para cada estado.
 
-O \textit{ATDL} define que, de tempos em tempos, a política deve ser recalculada. Para isto, é
+O \textit{ATDLR} define que, de tempos em tempos, a política deve ser recalculada. Para isto, é
 necessário realizar o processamento de um MDP\footnote{\textit{Markov Decision Process}, ou
 Processo de Decisão de Markov.} A nova política para um estado $s$ se dá por:
 
@@ -131,7 +139,7 @@ traduz, na fórmula, as probabilidades descritas no início deste relatório (70
 \section{Descrição da Implementação}
 
 Em nossa implementação criamos uma classe \texttt{Tdlr} para servir como um \textit{façade} para
-as funções do algoritmo. O algoritmo pode ser configurado pelos seguintes parâmetros:
+as diferentes partes do algoritmo. O algoritmo pode ser configurado pelos seguintes parâmetros:
 
 \begin{description}
   \item[$float\ gamma\ =\ .9f;$] \hfill \\
@@ -162,12 +170,38 @@ as funções do algoritmo. O algoritmo pode ser configurado pelos seguintes par�
   nos parâmetros.
 \item[$Tdlr\#updatePolicy(tileMap, currentPolicy)$] \hfill\\
   Método que atualiza a política. O parâmetro $tileMap$ é utilizado para saber o tamanho do
-  labirinto. O parâmetro $currentPolicy$ contém a política atual. Este método é chamado a cada
-  passo dado por Link. Porém, internamente, o método utiliza um contador parametrizável para
-  realizar o cálculo a cada $policySteps$ passos.
+  labirinto. O parâmetro $currentPolicy$ contém a política atual. Internamente, o método utiliza
+  um contador parametrizável para realizar o cálculo a cada $policySteps$ passos.
+\end{description}
+
+A implementação chama o método $updateUtilities(s\prime,\ s)$ a cada passo dado por Link,
+recalculando as utilidades dos estados envolvidos no passo. O método
+$updatePolicy(tileMap, currentPolicy)$ também é chamado a cada passo, porém uma nova política
+só é efetivamente gerada após $policySteps$ passos. Enquanto isso, o método retorna a própria
+$currentPolicy$.
+
+\subsection{Outras Considerações}
+
+Além da nossa implementação, alguns ajustes tiveram que ser feitos no código fornecido pelo
+professor para que as coisas funcionassem de forma mais satisfatória. Foram elas:
+
+\begin{description}
+\item[$State\#equals$] \hfill \\Removido a validação da propriedade $reward$ para dizer que dois objetos $State$ são iguais. Isto causava conflitos nos HashMaps que utilizam o $equals$ em casos de \textit{bucket conflicts}.
+\item[$Player\#computeNextMove$] \hfill \\ Duas aterações foram feitas aqui:
+  \begin{itemize}
+  \item Adicionada validação para que Link pegue o \textit{rupee} somente uma vez (do contrário ele ficaria pegando infinitos \textit{rupees} para recompensa infinita).
+  \item Havia um bug na construção do estado $current$, onde os parâmetros $x$ e $y$ estavam trocados.
+  \end{itemize}
 \end{description}
 
 \section{Avaliação do Algoritmo}
+
+\begin{figure}[h]
+\includegraphics{trivial}\\
+\includegraphics{empty}\\
+\includegraphics{easy}
+\centering
+\end{figure}
 
 \section{Conclusão}
 
