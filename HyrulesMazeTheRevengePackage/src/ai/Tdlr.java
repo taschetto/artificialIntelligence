@@ -156,7 +156,7 @@ public class Tdlr {
 		if (canExecute(s, a))
 		{
 			State suc = successor(s, a);
-			value = .7f * (U.containsKey(suc) ? U.get(suc) : 0);
+			value += .7f * (U.containsKey(suc) ? U.get(suc) : 0);
 		}
 		
 		for (Action e : sideEffects.get(a))

@@ -326,8 +326,6 @@ public class Player extends MapObject {
 		this.policy = tdlr.updatePolicy(tileMap, this.policy);
 		previous = current;
 		
-		//System.out.println(randomOutcome);
-		
 		return randomOutcome;
 	}
 	
